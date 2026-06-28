@@ -1,0 +1,92 @@
+<div class="app-shell" [class.rtl]="isRtl">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
+    <div class="sidebar-header">
+      <span class="logo-icon">⚖️</span>
+      <span class="logo-text" *ngIf="!sidebarCollapsed">Law Firm</span>
+      <button class="collapse-btn" (click)="sidebarCollapsed = !sidebarCollapsed">
+        {{ sidebarCollapsed ? '›' : '‹' }}
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Dashboard</span>
+      </a>
+      <a routerLink="/cases" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📁</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">القضايا</span>
+      </a>
+      <a routerLink="/sessions" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">الجلسات</span>
+      </a>
+      <a routerLink="/clients" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">العملاء</span>
+      </a>
+      <a routerLink="/lawyers" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">👨‍⚖️</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">المحامون</span>
+      </a>
+      <a routerLink="/documents" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📄</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">المستندات</span>
+      </a>
+      <a routerLink="/tasks" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">✅</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">المهام</span>
+      </a>
+      <a routerLink="/deadlines" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">⏰</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">المواعيد القانونية</span>
+      </a>
+      <a routerLink="/consultations" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">💬</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">الاستشارات</span>
+      </a>
+      <a routerLink="/reports" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">التقارير</span>
+      </a>
+      <!-- Admin only -->
+      <ng-container *ngIf="isAdmin">
+        <div class="nav-divider" *ngIf="!sidebarCollapsed"><span>الإدارة</span></div>
+        <a routerLink="/users" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">🔧</span>
+          <span class="nav-label" *ngIf="!sidebarCollapsed">المستخدمون</span>
+        </a>
+        <a routerLink="/audit-logs" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">🔍</span>
+          <span class="nav-label" *ngIf="!sidebarCollapsed">سجل التدقيق</span>
+        </a>
+      </ng-container>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="topbar-search">
+        <input type="search" placeholder="بحث..." (keyup.enter)="onSearch($event)" />
+      </div>
+      <div class="topbar-actions">
+        <a routerLink="/notifications" class="icon-btn" title="الإشعارات">
+          🔔 <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        </a>
+        <div class="user-menu" (click)="userMenuOpen = !userMenuOpen">
+          <span class="avatar">{{ userInitial }}</span>
+          <span class="user-name">{{ user?.name }}</span>
+          <div class="dropdown" *ngIf="userMenuOpen">
+            <button (click)="logout()">تسجيل الخروج</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
