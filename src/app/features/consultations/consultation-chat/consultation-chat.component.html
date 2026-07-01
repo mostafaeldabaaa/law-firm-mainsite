@@ -1,0 +1,116 @@
+<!-- consultation-chat.component.html -->
+<div class="flex flex-col h-[640px]">
+
+  <!-- رأس المحادثة -->
+  <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+    <div class="flex items-center gap-2">
+      <span
+        class="text-xs font-medium px-2.5 py-1 rounded-full"
+        [class.bg-amber-50]="consultation.status === 'pending'"
+        [class.text-amber-600]="consultation.status === 'pending'"
+        [class.bg-blue-50]="consultation.status === 'in_progress'"
+        [class.text-blue-600]="consultation.status === 'in_progress'"
+        [class.bg-emerald-50]="consultation.status === 'answered'"
+        [class.text-emerald-600]="consultation.status === 'answered'"
+        [class.bg-gray-100]="consultation.status === 'closed'"
+        [class.text-gray-500]="consultation.status === 'closed'">
+        {{ consultation.status === 'pending' ? 'قيد الانتظار'
+           : consultation.status === 'in_progress' ? 'جارية'
+           : consultation.status === 'answered' ? 'تم الرد'
+           : 'مغلقة' }}
+      </span>
+
+      @if (consultation.status !== 'closed') {
+        <button
+          (click)="onConvertToCase()"
+          class="text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+          تحويل إلى قضية
+        </button>
+        <button
+          (click)="showAssignBox.set(!showAssignBox())"
+          class="text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+          إسناد لمحامٍ
+        </button>
+      }
+    </div>
+
+    <div class="text-right">
+      <h2 class="font-semibold text-gray-900">{{ consultation.subject }}</h2>
+      <p class="text-xs text-gray-400 mt-0.5">
+        {{ consultation.client.fullName }}
+        @if (consultation.assignedLawyer) { · محامٍ: {{ consultation.assignedLawyer.barNumber }} }
+      </p>
+    </div>
+  </div>
+
+  <!-- صندوق إسناد محامٍ -->
+  @if (showAssignBox()) {
+    <div class="flex items-center gap-2 px-5 py-3 border-b border-gray-100 bg-gray-50">
+      <input
+        [(ngModel)]="lawyerIdDraft"
+        [ngModelOptions]="{ standalone: true }"
+        type="text"
+        placeholder="معرف المحامي (lawyerId)"
+        class="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-gray-900/10" />
+      <button
+        (click)="submitAssign()"
+        class="text-sm font-medium bg-gray-900 text-white px-3 py-2 rounded-lg hover:bg-gray-800">
+        إسناد
+      </button>
+    </div>
+  }
+
+  <!-- تفاصيل الطلب الأصلي -->
+  <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/60">
+    <p class="text-sm text-gray-700 text-right leading-relaxed">{{ consultation.description }}</p>
+    <p class="text-xs text-gray-400 text-right mt-1">{{ consultation.category }}</p>
+  </div>
+
+  <!-- الرسائل -->
+  <div class="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+    @if (consultation.messages && consultation.messages.length) {
+      @for (m of consultation.messages; track m.id ?? m._id) {
+        <div
+          class="max-w-[75%] flex flex-col"
+          [class.items-end]="m.senderId === consultation.client._id"
+          [class.items-start]="m.senderId !== consultation.client._id"
+          [class.mr-auto]="m.senderId !== consultation.client._id"
+          [class.ml-auto]="m.senderId === consultation.client._id">
+          <div
+            class="rounded-2xl px-4 py-2.5 text-sm text-right"
+            [class.bg-gray-900]="m.senderId === consultation.client._id"
+            [class.text-white]="m.senderId === consultation.client._id"
+            [class.bg-gray-100]="m.senderId !== consultation.client._id"
+            [class.text-gray-800]="m.senderId !== consultation.client._id">
+            {{ m.text }}
+          </div>
+          <span class="text-[11px] text-gray-400 mt-1">{{ m.senderName }}</span>
+        </div>
+      }
+    } @else {
+      <p class="text-sm text-gray-400 text-center mt-10">لا توجد رسائل بعد، ابدأ المحادثة</p>
+    }
+  </div>
+
+  <!-- صندوق الكتابة -->
+  @if (consultation.status !== 'closed') {
+    <div class="flex items-center gap-2 px-5 py-4 border-t border-gray-100">
+      <button
+        (click)="submitMessage()"
+        class="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2.5 rounded-lg">
+        إرسال
+      </button>
+      <input
+        [(ngModel)]="draft"
+        [ngModelOptions]="{ standalone: true }"
+        (keyup.enter)="submitMessage()"
+        type="text"
+        placeholder="اكتب رسالتك هنا..."
+        class="flex-1 text-sm border border-gray-200 rounded-lg px-4 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-gray-900/10" />
+    </div>
+  } @else {
+    <div class="px-5 py-4 border-t border-gray-100 text-center text-sm text-gray-400">
+      هذه الاستشارة مغلقة ولا يمكن إضافة رسائل جديدة
+    </div>
+  }
+</div>

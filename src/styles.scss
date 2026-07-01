@@ -1,18 +1,10 @@
-*, *::before, *::after { box-sizing: border-box; }
+@import "tailwindcss";
 
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f0f2f5;
-  color: #2d3748;
+  font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #070a14;
+  color: #d2daef;
   direction: rtl;
 }
-
-a { text-decoration: none; }
-
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 3px; }
-
-input, select, textarea, button { font-family: inherit; }

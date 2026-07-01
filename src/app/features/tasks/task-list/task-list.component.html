@@ -1,0 +1,169 @@
+<div class="min-h-screen bg-slate-50 p-6 font-sans" dir="rtl">
+
+  <!-- Header -->
+  <div class="flex items-start justify-between mb-6">
+    <div>
+      <h1 class="text-xl font-bold text-slate-900 mb-1">المهام</h1>
+      <p class="text-sm text-slate-400">{{ tasks.length }} مهمة • {{ pendingCount }} معلقة</p>
+    </div>
+    <button (click)="showForm = !showForm"
+      class="flex items-center gap-2 bg-slate-900 hover:bg-slate-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap">
+      <span class="text-lg leading-none">+</span> مهمة جديدة
+    </button>
+  </div>
+
+  <!-- Add Form -->
+  <div *ngIf="showForm" class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 mb-5">
+    <h3 class="text-sm font-semibold text-slate-800 mb-4">إضافة مهمة جديدة</h3>
+    <div class="grid grid-cols-2 gap-3">
+
+      <div class="col-span-2 flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-slate-500">العنوان *</label>
+        <input type="text" [(ngModel)]="form.title" placeholder="عنوان المهمة..."
+          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 w-full" />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-slate-500">مسند إلى *</label>
+        <select [(ngModel)]="form.assignedTo"
+          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 bg-white w-full">
+          <option value="">اختر</option>
+          <option *ngFor="let u of users" [value]="u._id">{{ getName(u) }}</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-slate-500">الأولوية</label>
+        <select [(ngModel)]="form.priority"
+          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 bg-white w-full">
+          <option value="low">منخفضة</option>
+          <option value="medium">متوسطة</option>
+          <option value="high">عالية</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-slate-500">تاريخ الاستحقاق *</label>
+        <input type="date" [(ngModel)]="form.dueDate"
+          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 w-full" />
+      </div>
+
+      <div class="col-span-2 flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-slate-500">الوصف</label>
+        <textarea [(ngModel)]="form.description" rows="2" placeholder="تفاصيل إضافية..."
+          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 resize-none w-full font-[inherit]"></textarea>
+      </div>
+
+    </div>
+
+    <div *ngIf="formError" class="mt-3 bg-red-50 border border-red-100 text-red-700 text-xs px-3 py-2 rounded-lg">
+      {{ formError }}
+    </div>
+
+    <div class="flex gap-2 mt-4">
+      <button (click)="addTask()" [disabled]="saving"
+        class="bg-slate-900 hover:bg-slate-700 disabled:opacity-50 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+        {{ saving ? 'جاري الحفظ...' : 'حفظ' }}
+      </button>
+      <button (click)="showForm = false"
+        class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+        إلغاء
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex gap-3 mb-5">
+    <select [(ngModel)]="statusFilter" (ngModelChange)="load()"
+      class="px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 bg-white text-slate-600">
+      <option value="">كل الحالات</option>
+      <option value="pending">معلقة</option>
+      <option value="in_progress">قيد التنفيذ</option>
+      <option value="completed">مكتملة</option>
+      <option value="overdue">متأخرة</option>
+    </select>
+    <select [(ngModel)]="priorityFilter" (ngModelChange)="load()"
+      class="px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 bg-white text-slate-600">
+      <option value="">كل الأولويات</option>
+      <option value="high">عالية</option>
+      <option value="medium">متوسطة</option>
+      <option value="low">منخفضة</option>
+    </select>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading" class="flex flex-col gap-3">
+    <div *ngFor="let i of skeletonRows" class="flex items-center gap-0 bg-white rounded-2xl border border-slate-100 overflow-hidden">
+      <div class="w-1 self-stretch bg-slate-200"></div>
+      <div class="flex-1 px-4 py-4">
+        <div class="h-3.5 rounded-md bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 bg-[length:800px_100%] animate-pulse w-48 mb-2"></div>
+        <div class="h-3 rounded-md bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 bg-[length:800px_100%] animate-pulse w-28"></div>
+      </div>
+      <div class="px-4">
+        <div class="h-6 w-16 rounded-full bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 animate-pulse"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && tasks.length === 0" class="text-center py-16 text-slate-400">
+    <div class="text-5xl mb-3">✅</div>
+    <p class="text-sm">لا توجد مهام</p>
+  </div>
+
+  <!-- Tasks List -->
+  <div *ngIf="!loading && tasks.length > 0" class="flex flex-col gap-3">
+    <div *ngFor="let t of tasks"
+      class="flex items-center gap-0 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-px transition-all">
+
+      <!-- Priority bar -->
+      <div class="w-1 self-stretch flex-shrink-0"
+        [ngClass]="{
+          'bg-red-500':   t.priority === 'high',
+          'bg-orange-400': t.priority === 'medium',
+          'bg-green-500': t.priority === 'low'
+        }">
+      </div>
+
+      <!-- Body -->
+      <div class="flex-1 px-4 py-3.5 min-w-0">
+        <div class="text-sm font-semibold text-slate-900 truncate mb-1.5">{{ t.title }}</div>
+        <div class="flex items-center flex-wrap gap-x-2 gap-y-1 text-xs text-slate-500">
+          <span>👤 {{ getName(t.assignedTo) }}</span>
+          <span *ngIf="t.case" class="text-slate-300">•</span>
+          <span *ngIf="t.case">📁 {{ t.case?.caseNumber }}</span>
+          <span class="text-slate-300">•</span>
+          <span [class.text-red-500]="isOverdue(t)" [class.font-medium]="isOverdue(t)">
+            📅 {{ t.dueDate | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+        <div *ngIf="t.description" class="text-xs text-slate-400 truncate mt-1.5">{{ t.description }}</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2 px-4 flex-shrink-0">
+        <span class="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap"
+          [ngClass]="{
+            'bg-orange-50 text-orange-700':  t.status === 'pending',
+            'bg-blue-50 text-blue-700':      t.status === 'in_progress',
+            'bg-green-50 text-green-700':    t.status === 'completed',
+            'bg-red-50 text-red-700':        t.status === 'overdue'
+          }">
+          {{ statusLabel(t.status) }}
+        </span>
+
+        <select [(ngModel)]="t.status" (ngModelChange)="updateStatus(t)"
+          class="px-2 py-1.5 border border-slate-200 rounded-lg text-xs outline-none bg-white text-slate-600 cursor-pointer focus:border-slate-400">
+          <option value="pending">معلقة</option>
+          <option value="in_progress">قيد التنفيذ</option>
+          <option value="completed">مكتملة</option>
+        </select>
+
+        <button (click)="deleteTask(t._id)"
+          class="text-slate-300 hover:text-red-400 transition-colors text-base p-1">🗑</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

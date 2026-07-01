@@ -1,0 +1,50 @@
+<!-- consultation-list.component.html -->
+<aside class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+  <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+    <span class="text-sm text-gray-400">{{ consultations.length }} استشارة</span>
+  </div>
+
+  @if (loading) {
+    <div class="px-5 py-10 text-center text-sm text-gray-400">جارٍ التحميل...</div>
+  } @else if (!consultations.length) {
+    <div class="px-5 py-10 text-center text-sm text-gray-400">لا توجد استشارات بعد</div>
+  } @else {
+    <ul class="divide-y divide-gray-100 max-h-[640px] overflow-y-auto">
+      @for (item of consultations; track trackById($index, item)) {
+        <li
+          (click)="select.emit(item._id)"
+          [class.bg-gray-50]="item._id === selectedId"
+          class="px-5 py-4 cursor-pointer hover:bg-gray-50 transition-colors">
+
+          <div class="flex items-start justify-between gap-3">
+            <span
+              class="shrink-0 text-xs font-medium px-2.5 py-1 rounded-full"
+              [class.bg-amber-50]="item.status === 'pending'"
+              [class.text-amber-600]="item.status === 'pending'"
+              [class.bg-blue-50]="item.status === 'in_progress'"
+              [class.text-blue-600]="item.status === 'in_progress'"
+              [class.bg-emerald-50]="item.status === 'answered'"
+              [class.text-emerald-600]="item.status === 'answered'"
+              [class.bg-gray-100]="item.status === 'closed'"
+              [class.text-gray-500]="item.status === 'closed'">
+              {{ statusLabels[item.status] }}
+            </span>
+            <h3 class="text-[15px] font-semibold text-gray-900 text-right leading-snug">
+              {{ item.subject }}
+            </h3>
+          </div>
+
+          <p class="text-sm text-gray-500 mt-2 text-right line-clamp-2">
+            {{ item.description }}
+          </p>
+
+          <div class="flex items-center justify-end gap-1.5 mt-2 text-xs text-gray-400">
+            <span>{{ item.client.fullName }}</span>
+            <span>·</span>
+            <span>{{ item.client.companyName || item.category }}</span>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</aside>

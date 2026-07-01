@@ -1,135 +1,476 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../../core/services/index';
+import { Subject } from 'rxjs';
+import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
+interface Client {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  role: string;
+  branch: string | null;
+  isActive: boolean;
+  lastLoginAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  // extra fields for company clients
+  type?: 'individual' | 'company';
+  nationalId?: string;
+  companyName?: string;
+  casesCount?: number;
+}
+
+interface ApiResponse {
+  success: boolean;
+  message: string;
+  data: {
+    users: Client[];
+  };
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="page" dir="rtl">
-      <div class="page-header">
-        <h1>🔧 إدارة المستخدمين</h1>
-        <button class="btn-primary" (click)="showForm = !showForm">➕ مستخدم جديد</button>
+    <div class="min-h-screen bg-gray-50 p-6" dir="rtl">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="text-right">
+          <h1 class="text-3xl font-bold text-gray-900">العملاء</h1>
+          <p class="text-gray-500 text-sm mt-1">إدارة بيانات العملاء والشركات</p>
+        </div>
+        <button
+          (click)="openAddForm()"
+          class="flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
+        >
+          <span class="text-lg">+</span>
+          إضافة عميل
+        </button>
       </div>
 
-      <!-- Add User Form -->
-      <div class="card" *ngIf="showForm">
-        <h3>إضافة مستخدم جديد</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>الاسم *</label><input type="text" [(ngModel)]="form.name" /></div>
-          <div class="form-group"><label>البريد الإلكتروني *</label><input type="email" [(ngModel)]="form.email" /></div>
-          <div class="form-group"><label>كلمة المرور *</label><input type="password" [(ngModel)]="form.password" /></div>
-          <div class="form-group"><label>الدور *</label>
-            <select [(ngModel)]="form.role">
-              <option value="lawyer">محامي</option>
-              <option value="senior_lawyer">محامي أول</option>
-              <option value="secretary">سكرتير</option>
-              <option value="branch_manager">مدير فرع</option>
-              <option value="client">عميل</option>
-            </select>
+      <!-- Add Client Modal -->
+      <div
+        *ngIf="showForm"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+        (click)="onOverlayClick($event)"
+      >
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6">
+          <h2 class="text-lg font-bold text-gray-900 mb-5">إضافة عميل جديد</h2>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-600">الاسم الأول *</label>
+              <input
+                type="text"
+                [(ngModel)]="form.firstName"
+                placeholder="أدخل الاسم الأول"
+                class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-600">الاسم الأخير *</label>
+              <input
+                type="text"
+                [(ngModel)]="form.lastName"
+                placeholder="أدخل الاسم الأخير"
+                class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-600">البريد الإلكتروني *</label>
+              <input
+                type="email"
+                [(ngModel)]="form.email"
+                placeholder="example@email.com"
+                class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-600">رقم الهاتف</label>
+              <input
+                type="tel"
+                [(ngModel)]="form.phone"
+                placeholder="01xxxxxxxxx"
+                class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-600">النوع</label>
+              <select
+                [(ngModel)]="form.type"
+                class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 bg-white"
+              >
+                <option value="individual">فرد</option>
+                <option value="company">شركة</option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-1.5" *ngIf="form.type === 'individual'">
+              <label class="text-sm font-medium text-gray-600">الرقم القومي</label>
+              <input
+                type="text"
+                [(ngModel)]="form.nationalId"
+                placeholder="14 رقم"
+                maxlength="14"
+                class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5 col-span-2" *ngIf="form.type === 'company'">
+              <label class="text-sm font-medium text-gray-600">اسم الشركة</label>
+              <input
+                type="text"
+                [(ngModel)]="form.companyName"
+                placeholder="أدخل اسم الشركة"
+                class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
+              />
+            </div>
           </div>
-          <div class="form-group"><label>رقم الهاتف</label><input type="tel" [(ngModel)]="form.phone" /></div>
-        </div>
-        <div class="error-msg" *ngIf="formError">{{ formError }}</div>
-        <div class="form-actions">
-          <button class="btn-primary" (click)="addUser()" [disabled]="saving">{{ saving ? 'جاري الحفظ...' : 'حفظ' }}</button>
-          <button class="btn-cancel" (click)="showForm = false">إلغاء</button>
+
+          <div
+            *ngIf="formError"
+            class="mt-4 bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg"
+          >
+            {{ formError }}
+          </div>
+
+          <div class="flex gap-3 mt-5">
+            <button
+              (click)="addClient()"
+              [disabled]="saving"
+              class="flex-1 bg-gray-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {{ saving ? 'جاري الحفظ...' : 'حفظ' }}
+            </button>
+            <button
+              (click)="closeForm()"
+              class="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
+              إلغاء
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Filters -->
-      <div class="filters">
-        <select [(ngModel)]="roleFilter" (ngModelChange)="load()">
-          <option value="">كل الأدوار</option>
-          <option value="super_admin">مدير عام</option>
-          <option value="branch_manager">مدير فرع</option>
-          <option value="senior_lawyer">محامي أول</option>
-          <option value="lawyer">محامي</option>
-          <option value="secretary">سكرتير</option>
-          <option value="client">عميل</option>
-        </select>
-      </div>
+      <!-- Table Card -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
-      <div class="loading" *ngIf="loading">جاري التحميل...</div>
-      <div class="table-wrap" *ngIf="!loading">
-        <table>
-          <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الدور</th><th>الحالة</th><th>تاريخ الإنشاء</th><th>إجراءات</th></tr></thead>
-          <tbody>
-            <tr *ngFor="let u of users">
-              <td>{{ u.name }}</td>
-              <td>{{ u.email }}</td>
-              <td><span class="role-badge">{{ roleLabel(u.role) }}</span></td>
-              <td><span class="badge" [class.active]="u.isActive">{{ u.isActive ? 'نشط' : 'غير نشط' }}</span></td>
-              <td>{{ u.createdAt | date:'dd/MM/yyyy' }}</td>
-              <td>
-                <button class="icon-btn" (click)="toggleStatus(u)" [title]="u.isActive ? 'تعطيل' : 'تفعيل'">{{ u.isActive ? '🔴' : '🟢' }}</button>
-              </td>
-            </tr>
-            <tr *ngIf="users.length === 0"><td colspan="6" class="empty">لا يوجد مستخدمون</td></tr>
-          </tbody>
-        </table>
+        <!-- Search Bar -->
+        <div class="p-4 border-b border-gray-100 flex justify-end">
+          <div class="relative w-72">
+            <input
+              type="text"
+              [(ngModel)]="searchQuery"
+              (ngModelChange)="onSearch($event)"
+              placeholder="بحث بالاسم، رقم الهاتف..."
+              class="w-full border border-gray-200 rounded-xl pl-4 pr-10 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
+            />
+            <svg
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="loading" class="flex items-center justify-center py-20 text-gray-400">
+          <div class="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin ml-2"></div>
+          جاري التحميل...
+        </div>
+
+        <!-- Table -->
+        <div *ngIf="!loading" class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 text-right">
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">الاسم</th>
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">النوع</th>
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">الهاتف</th>
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">البريد الإلكتروني</th>
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">الرقم القومي</th>
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">عدد القضايا</th>
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <tr *ngFor="let client of filteredClients" class="hover:bg-gray-50/50 transition-colors">
+                <td class="px-5 py-4 text-sm font-medium text-gray-900">
+                  {{ client.firstName }} {{ client.lastName }}
+                </td>
+                <td class="px-5 py-4">
+                  <span *ngIf="client.type === 'company'"
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-400 text-white">
+                    شركة
+                  </span>
+                  <span *ngIf="client.type !== 'company'"
+                    class="text-sm text-gray-600">
+                    فرد
+                  </span>
+                </td>
+                <td class="px-5 py-4 text-sm text-gray-700 font-mono tracking-wide">{{ client.phone }}</td>
+                <td class="px-5 py-4 text-sm text-gray-600 dir-ltr text-left">{{ client.email }}</td>
+                <td class="px-5 py-4 text-sm text-gray-500 font-mono">
+                  {{ client.nationalId || '-' }}
+                </td>
+                <td class="px-5 py-4">
+                  <span class="inline-flex items-center justify-center w-8 h-8 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700">
+                    {{ client.casesCount ?? 0 }}
+                  </span>
+                </td>
+                <td class="px-5 py-4">
+                  <button
+                    (click)="deleteClient(client)"
+                    class="text-red-400 hover:text-red-600 transition-colors p-1.5 rounded-lg hover:bg-red-50"
+                    title="حذف العميل"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="filteredClients.length === 0">
+                <td colspan="7" class="text-center py-16 text-gray-400">
+                  <div class="flex flex-col items-center gap-2">
+                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="text-sm">لا يوجد عملاء</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Footer -->
+        <div
+          *ngIf="!loading && meta.totalPages > 1"
+          class="flex items-center justify-between px-5 py-3.5 border-t border-gray-100"
+        >
+          <span class="text-sm text-gray-500">
+            إجمالي {{ meta.total }} عميل
+          </span>
+          <div class="flex gap-2">
+            <button
+              (click)="goToPage(meta.page - 1)"
+              [disabled]="meta.page === 1"
+              class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors"
+            >السابق</button>
+            <span class="px-3 py-1.5 text-sm bg-gray-900 text-white rounded-lg">
+              {{ meta.page }}
+            </span>
+            <button
+              (click)="goToPage(meta.page + 1)"
+              [disabled]="meta.page === meta.totalPages"
+              class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors"
+            >التالي</button>
+          </div>
+        </div>
       </div>
     </div>
   `,
-  styles: [`
-    .page { direction: rtl; font-family: 'Segoe UI', Tahoma, sans-serif; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; h1 { font-size: 20px; font-weight: 700; color: #1a2744; margin: 0; } }
-    .btn-primary { padding: 10px 20px; background: #1a2744; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
-    .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 16px; h3 { font-size: 15px; font-weight: 600; color: #1a2744; margin: 0 0 14px; } }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; label { font-size: 13px; font-weight: 500; color: #4a5568; } }
-    input, select { padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; }
-    .error-msg { background: #fff5f5; color: #c53030; padding: 8px; border-radius: 8px; font-size: 13px; margin-top: 8px; }
-    .form-actions { display: flex; gap: 10px; margin-top: 14px; }
-    .btn-cancel { padding: 10px 20px; border: 1px solid #e2e8f0; color: #4a5568; border-radius: 8px; cursor: pointer; background: #fff; font-size: 14px; }
-    .filters { margin-bottom: 16px; select { padding: 9px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; } }
-    .loading { text-align: center; padding: 60px; color: #718096; }
-    .table-wrap { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: auto; }
-    table { width: 100%; border-collapse: collapse; th { background: #f7fafc; padding: 12px 16px; text-align: right; font-size: 13px; font-weight: 600; color: #4a5568; border-bottom: 1px solid #e2e8f0; } td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #f7fafc; } tr:last-child td { border-bottom: none; } }
-    .role-badge { padding: 2px 10px; background: #ebf8ff; color: #2b6cb0; border-radius: 10px; font-size: 12px; font-weight: 500; }
-    .badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; background: #fff5f5; color: #c53030; &.active { background: #f0fff4; color: #276749; } }
-    .icon-btn { background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px 8px; }
-    .empty { text-align: center; padding: 40px; color: #718096; }
-  `]
 })
-export class UserListComponent implements OnInit {
-  users: any[] = []; loading = false; roleFilter = '';
-  showForm = false; saving = false; formError = '';
-  form = { name: '', email: '', password: '', role: 'lawyer', phone: '' };
+export class UserListComponent implements OnInit, OnDestroy {
+  clients: Client[] = [];
+  filteredClients: Client[] = [];
+  loading = false;
+  searchQuery = '';
 
-  constructor(private svc: UsersService) {}
-  ngOnInit() { this.load(); }
+  showForm = false;
+  saving = false;
+  formError = '';
 
-  load() {
+  form = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    type: 'individual' as 'individual' | 'company',
+    nationalId: '',
+    companyName: '',
+  };
+
+  meta = { total: 0, page: 1, limit: 20, totalPages: 1 };
+
+  private destroy$ = new Subject<void>();
+  private searchSubject = new Subject<string>();
+
+  constructor(
+    private usersService: UsersService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.load();
+
+    // Debounce search input to avoid filtering on every keystroke
+    this.searchSubject
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((query) => {
+        this.applySearch(query);
+        this.cdr.markForCheck(); // tell OnPush to re-render
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  load(page = 1): void {
     this.loading = true;
-    const params: any = {};
-    if (this.roleFilter) params.role = this.roleFilter;
-    this.svc.getAll(params).subscribe({
-      next: res => { this.users = (res as any).data || []; this.loading = false; },
-      error: () => { this.loading = false; }
-    });
+    this.cdr.markForCheck();
+
+    const params = {
+      role: 'client',
+      page: String(page),
+      limit: String(this.meta.limit),
+    };
+
+    this.usersService
+      .getAll(params)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          this.clients = res.data.users;
+          this.meta = res.meta;
+          this.applySearch(this.searchQuery);
+          this.loading = false;
+          this.cdr.markForCheck(); // OnPush: manually trigger change detection
+        },
+        error: () => {
+          this.loading = false;
+          this.cdr.markForCheck();
+        },
+      });
   }
 
-  addUser() {
-    if (!this.form.name || !this.form.email || !this.form.password) { this.formError = 'يرجى تعبئة الحقول المطلوبة'; return; }
-    this.saving = true; this.formError = '';
-    this.svc.create(this.form).subscribe({
-      next: () => { this.saving = false; this.showForm = false; this.form = { name: '', email: '', password: '', role: 'lawyer', phone: '' }; this.load(); },
-      error: err => { this.formError = err?.error?.message || 'خطأ'; this.saving = false; }
-    });
+  onSearch(query: string): void {
+    this.searchSubject.next(query);
   }
 
-  toggleStatus(u: any) {
-    this.svc.update(u._id, { isActive: !u.isActive }).subscribe({
-      next: () => { u.isActive = !u.isActive; },
-      error: () => {}
-    });
+  private applySearch(query: string): void {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      this.filteredClients = [...this.clients];
+      return;
+    }
+    this.filteredClients = this.clients.filter(
+      (c) =>
+        `${c.firstName} ${c.lastName}`.toLowerCase().includes(q) ||
+        c.phone?.includes(q) ||
+        c.email?.toLowerCase().includes(q)
+    );
   }
 
-  roleLabel(r: string) {
-    const m: any = { super_admin: 'مدير عام', branch_manager: 'مدير فرع', senior_lawyer: 'محامي أول', lawyer: 'محامي', secretary: 'سكرتير', client: 'عميل' };
-    return m[r] || r;
+  openAddForm(): void {
+    this.showForm = true;
+    this.formError = '';
+    this.form = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      type: 'individual',
+      nationalId: '',
+      companyName: '',
+    };
+    this.cdr.markForCheck();
+  }
+
+  closeForm(): void {
+    this.showForm = false;
+    this.cdr.markForCheck();
+  }
+
+  onOverlayClick(event: MouseEvent): void {
+    if ((event.target as HTMLElement).classList.contains('fixed')) {
+      this.closeForm();
+    }
+  }
+
+  addClient(): void {
+    if (!this.form.firstName || !this.form.email) {
+      this.formError = 'يرجى تعبئة الحقول المطلوبة';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.saving = true;
+    this.formError = '';
+    this.cdr.markForCheck();
+
+    const payload = {
+      firstName: this.form.firstName,
+      lastName: this.form.lastName,
+      email: this.form.email,
+      phone: this.form.phone,
+      role: 'client',
+      ...(this.form.type === 'individual' && { nationalId: this.form.nationalId }),
+      ...(this.form.type === 'company' && { companyName: this.form.companyName }),
+    };
+
+    this.usersService
+      .create(payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.saving = false;
+          this.showForm = false;
+          this.load();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.formError = err?.error?.message || 'حدث خطأ، يرجى المحاولة مجدداً';
+          this.saving = false;
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  deleteClient(client: Client): void {
+    if (!confirm(`هل تريد حذف ${client.firstName} ${client.lastName}؟`)) return;
+
+    this.usersService
+      .delete(client._id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.clients = this.clients.filter((c) => c._id !== client._id);
+          this.applySearch(this.searchQuery);
+          this.cdr.markForCheck();
+        },
+        error: () => {},
+      });
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.meta.totalPages) return;
+    this.load(page);
   }
 }

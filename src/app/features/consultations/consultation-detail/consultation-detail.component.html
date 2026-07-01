@@ -1,0 +1,23 @@
+<!-- consultation-detail.component.html -->
+<div dir="rtl" class="min-h-screen bg-gray-50 px-6 py-6">
+
+  <button
+    (click)="back()"
+    class="text-sm text-gray-500 hover:text-gray-700 mb-4 inline-flex items-center gap-1">
+    <span>→ رجوع لكل الاستشارات</span>
+  </button>
+
+  @if (loading()) {
+    <div class="text-center text-gray-400 py-20">جارٍ التحميل...</div>
+  } @else if (errorMsg()) {
+    <div class="text-center text-red-500 py-20">{{ errorMsg() }}</div>
+  } @else if (consultation(); as c) {
+    <div class="bg-white rounded-2xl border border-gray-100 max-w-3xl mx-auto">
+      <app-consultation-chat
+        [consultation]="c"
+        (sendMessage)="onMessageSent($event)"
+        (assignLawyer)="onAssign($event)"
+        (convertToCase)="onConvertToCase($event)" />
+    </div>
+  }
+</div>

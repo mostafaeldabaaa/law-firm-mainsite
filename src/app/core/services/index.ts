@@ -100,7 +100,7 @@ export class AuditLogsService {
 @Injectable({ providedIn: 'root' })
 export class ReportsService {
   constructor(private http: HttpClient) {}
-  getCaseStatus() { return this.http.get<ApiResponse<CaseStatusReport[]>>(`${API}/reports/case-status`); }
+getCaseStatus() { return this.http.get<any>(`${API}/reports/case-status`); }
   getRevenue() { return this.http.get<ApiResponse<RevenueReport[]>>(`${API}/reports/revenue`); }
 }
 

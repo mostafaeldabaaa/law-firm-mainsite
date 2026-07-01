@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,26 +10,41 @@ import { CasesService } from '../../../core/services/cases.service';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   template: `
-    <div class="page" dir="rtl">
-      <div class="page-header">
-        <h1>⏰ المواعيد القانونية</h1>
-        <button class="btn-primary" (click)="showForm = !showForm">➕ موعد جديد</button>
+    <div class="p-6 bg-gray-50 min-h-screen" dir="rtl">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-bold text-gray-900">⏰ المواعيد القانونية</h1>
+        <button
+          (click)="showForm = !showForm"
+          class="bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
+        >
+          ➕ موعد جديد
+        </button>
       </div>
 
       <!-- Add Form -->
-      <div class="card" *ngIf="showForm">
-        <h3>إضافة موعد قانوني</h3>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>القضية *</label>
-            <select [(ngModel)]="form.case">
+      <div *ngIf="showForm" class="bg-white rounded-2xl shadow-sm p-5 mb-4">
+        <h3 class="text-sm font-semibold text-gray-900 mb-4">إضافة موعد قانوني</h3>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-gray-600">القضية *</label>
+            <select
+              [(ngModel)]="form.case"
+              class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition bg-white"
+            >
               <option value="">اختر القضية</option>
               <option *ngFor="let c of cases" [value]="c._id">{{ c.caseNumber }} - {{ c.title }}</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>نوع الموعد *</label>
-            <select [(ngModel)]="form.type">
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-gray-600">نوع الموعد *</label>
+            <select
+              [(ngModel)]="form.type"
+              class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition bg-white"
+            >
               <option value="appeal">استئناف</option>
               <option value="cassation">نقض</option>
               <option value="objection">اعتراض</option>
@@ -38,32 +53,67 @@ import { CasesService } from '../../../core/services/cases.service';
               <option value="execution">تنفيذ</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>تاريخ الاستحقاق *</label>
-            <input type="date" [(ngModel)]="form.dueDate" />
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-gray-600">تاريخ الاستحقاق *</label>
+            <input
+              type="date"
+              [(ngModel)]="form.dueDate"
+              class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
+            />
           </div>
-          <div class="form-group">
-            <label>المحامي المسؤول *</label>
-            <select [(ngModel)]="form.responsibleLawyer">
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-gray-600">المحامي المسؤول *</label>
+            <select
+              [(ngModel)]="form.responsibleLawyer"
+              class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition bg-white"
+            >
               <option value="">اختر المحامي</option>
-              <option *ngFor="let l of lawyers" [value]="l._id">{{ l.name }}</option>
+              <option *ngFor="let l of lawyers" [value]="l._id">
+                {{ l.user?.firstName }} {{ l.user?.lastName }}
+              </option>
             </select>
           </div>
-          <div class="form-group full">
-            <label>ملاحظات</label>
-            <textarea [(ngModel)]="form.notes" rows="2"></textarea>
+
+          <div class="flex flex-col gap-1.5 col-span-2">
+            <label class="text-sm font-medium text-gray-600">ملاحظات</label>
+            <textarea
+              [(ngModel)]="form.notes"
+              rows="2"
+              class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition resize-none"
+            ></textarea>
           </div>
         </div>
-        <div class="error-msg" *ngIf="formError">{{ formError }}</div>
-        <div class="form-actions">
-          <button class="btn-primary" (click)="addDeadline()" [disabled]="saving">{{ saving ? 'جاري الحفظ...' : 'حفظ' }}</button>
-          <button class="btn-cancel" (click)="showForm = false">إلغاء</button>
+
+        <div *ngIf="formError" class="mt-4 bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg">
+          {{ formError }}
+        </div>
+
+        <div class="flex gap-3 mt-5">
+          <button
+            (click)="addDeadline()"
+            [disabled]="saving"
+            class="bg-gray-900 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {{ saving ? 'جاري الحفظ...' : 'حفظ' }}
+          </button>
+          <button
+            (click)="showForm = false"
+            class="border border-gray-200 text-gray-600 px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            إلغاء
+          </button>
         </div>
       </div>
 
       <!-- Filters -->
-      <div class="filters">
-        <select [(ngModel)]="statusFilter" (ngModelChange)="load()">
+      <div class="mb-4">
+        <select
+          [(ngModel)]="statusFilter"
+          (ngModelChange)="load()"
+          class="border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-gray-400 bg-white"
+        >
           <option value="">كل الحالات</option>
           <option value="pending">معلقة</option>
           <option value="completed">مكتملة</option>
@@ -72,98 +122,221 @@ import { CasesService } from '../../../core/services/cases.service';
         </select>
       </div>
 
-      <div class="loading" *ngIf="loading">جاري التحميل...</div>
-      <div class="table-wrap" *ngIf="!loading">
-        <table>
-          <thead><tr><th>النوع</th><th>القضية</th><th>المحامي</th><th>تاريخ الاستحقاق</th><th>الحالة</th><th>تحديث</th></tr></thead>
-          <tbody>
-            <tr *ngFor="let d of deadlines" [class.overdue]="isPast(d.dueDate) && d.status === 'pending'">
-              <td>{{ typeLabel(d.type) }}</td>
-              <td><a [routerLink]="['/cases', d.case?._id]" class="link">{{ d.case?.caseNumber }}</a></td>
-              <td>{{ d.responsibleLawyer?.name }}</td>
-              <td [class.red]="isPast(d.dueDate)">{{ d.dueDate | date:'dd/MM/yyyy' }}</td>
-              <td><span class="badge status-{{d.status}}">{{ statusLabel(d.status) }}</span></td>
-              <td>
-                <select [(ngModel)]="d.status" (ngModelChange)="updateStatus(d)" class="status-select">
-                  <option value="pending">معلقة</option>
-                  <option value="completed">مكتملة</option>
-                  <option value="cancelled">ملغاة</option>
-                </select>
-              </td>
-            </tr>
-            <tr *ngIf="deadlines.length === 0"><td colspan="6" class="empty">لا توجد مواعيد</td></tr>
-          </tbody>
-        </table>
+      <!-- Loading -->
+      <div *ngIf="loading" class="flex items-center justify-center py-20 text-gray-400">
+        <div class="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin ml-2"></div>
+        جاري التحميل...
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!loading" class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 text-right">
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500">النوع</th>
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500">القضية</th>
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500">المحامي</th>
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500">تاريخ الاستحقاق</th>
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500">الحالة</th>
+                <th class="px-5 py-3.5 text-sm font-semibold text-gray-500">تحديث</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <tr
+                *ngFor="let d of deadlines"
+                [class.bg-red-50]="isPast(d.dueDate) && d.status === 'pending'"
+                class="hover:bg-gray-50/50 transition-colors"
+              >
+                <td class="px-5 py-4 text-sm text-gray-700">{{ typeLabel(d.type) }}</td>
+                <td class="px-5 py-4 text-sm">
+                  <a [routerLink]="['/cases', d.case?._id]" class="text-blue-600 hover:underline">
+                    {{ d.case?.caseNumber }}
+                  </a>
+                </td>
+                <td class="px-5 py-4 text-sm text-gray-700">
+                  {{ d.responsibleLawyer?.user?.firstName }} {{ d.responsibleLawyer?.user?.lastName }}
+                </td>
+                <td
+                  class="px-5 py-4 text-sm"
+                  [class.text-red-600]="isPast(d.dueDate)"
+                  [class.font-medium]="isPast(d.dueDate)"
+                  [class.text-gray-600]="!isPast(d.dueDate)"
+                >
+                  {{ d.dueDate | date:'dd/MM/yyyy' }}
+                </td>
+                <td class="px-5 py-4">
+                  <span
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold"
+                    [ngClass]="{
+                      'bg-amber-50 text-amber-700': d.status === 'pending',
+                      'bg-blue-50 text-blue-700': d.status === 'due_soon',
+                      'bg-green-50 text-green-700': d.status === 'completed',
+                      'bg-red-50 text-red-700': d.status === 'missed',
+                      'bg-gray-100 text-gray-600': d.status === 'cancelled'
+                    }"
+                  >
+                    {{ statusLabel(d.status) }}
+                  </span>
+                </td>
+                <td class="px-5 py-4">
+                  <select
+                    [(ngModel)]="d.status"
+                    (ngModelChange)="updateStatus(d)"
+                    class="border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm outline-none focus:border-gray-400 bg-white"
+                  >
+                    <option value="pending">معلقة</option>
+                    <option value="completed">مكتملة</option>
+                    <option value="cancelled">ملغاة</option>
+                  </select>
+                </td>
+              </tr>
+
+              <tr *ngIf="deadlines.length === 0">
+                <td colspan="6" class="text-center py-16 text-gray-400 text-sm">لا توجد مواعيد</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   `,
-  styles: [`
-    .page { direction: rtl; font-family: 'Segoe UI', Tahoma, sans-serif; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; h1 { font-size: 20px; font-weight: 700; color: #1a2744; margin: 0; } }
-    .btn-primary { padding: 10px 20px; background: #1a2744; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
-    .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 16px; h3 { font-size: 15px; font-weight: 600; color: #1a2744; margin: 0 0 14px; } }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; &.full { grid-column: 1 / -1; } label { font-size: 13px; font-weight: 500; color: #4a5568; } }
-    input, select, textarea { padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; font-family: inherit; }
-    .error-msg { background: #fff5f5; color: #c53030; padding: 8px; border-radius: 8px; font-size: 13px; margin-top: 8px; }
-    .form-actions { display: flex; gap: 10px; margin-top: 14px; }
-    .btn-cancel { padding: 10px 20px; border: 1px solid #e2e8f0; color: #4a5568; border-radius: 8px; cursor: pointer; background: #fff; font-size: 14px; }
-    .filters { margin-bottom: 16px; select { padding: 9px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; } }
-    .loading { text-align: center; padding: 60px; color: #718096; }
-    .table-wrap { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: auto; }
-    table { width: 100%; border-collapse: collapse; th { background: #f7fafc; padding: 12px 16px; text-align: right; font-size: 13px; font-weight: 600; color: #4a5568; border-bottom: 1px solid #e2e8f0; } td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #f7fafc; } tr.overdue { background: #fff5f5; } .red { color: #e53e3e; font-weight: 500; } }
-    .link { color: #2b6cb0; text-decoration: none; }
-    .badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
-    .status-pending { background: #fffaf0; color: #c05621; }
-    .status-completed { background: #f0fff4; color: #276749; }
-    .status-missed { background: #fff5f5; color: #c53030; }
-    .status-cancelled { background: #edf2f7; color: #4a5568; }
-    .status-select { padding: 5px 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; outline: none; }
-    .empty { text-align: center; padding: 40px; color: #718096; }
-  `]
 })
 export class DeadlineListComponent implements OnInit {
-  deadlines: any[] = []; cases: any[] = []; lawyers: any[] = [];
-  loading = false; statusFilter = '';
-  showForm = false; saving = false; formError = '';
+  deadlines: any[] = [];
+  cases: any[] = [];
+  lawyers: any[] = [];
+  loading = false;
+  statusFilter = '';
+  showForm = false;
+  saving = false;
+  formError = '';
   form = { case: '', type: 'appeal', dueDate: '', responsibleLawyer: '', notes: '' };
 
-  constructor(private svc: DeadlinesService, private casesSvc: CasesService, private usersSvc: UsersService) {}
+  constructor(
+    private svc: DeadlinesService,
+    private casesSvc: CasesService,
+    private usersSvc: UsersService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-    this.casesSvc.getAll(1, 100).subscribe({ next: res => { const d = (res as any).data; this.cases = d?.data || d || []; } });
-    this.usersSvc.getLawyers().subscribe({ next: res => { this.lawyers = (res as any).data || []; } });
+    this.casesSvc.getAll(1, 100).subscribe({
+      next: (res: any) => {
+        console.log('Cases API Response:', res);
+        // استخراج القضايا من res.data.cases أو res.data.docs أو res.data
+        const d = res?.data;
+        this.cases = d?.cases || d?.docs || (Array.isArray(d) ? d : []);
+        this.cdr.markForCheck();
+      },
+      error: () => this.cdr.markForCheck()
+    });
+
+    this.usersSvc.getLawyers().subscribe({
+      next: (res: any) => {
+        console.log('Lawyers API Response:', res);
+        // استخراج المحامين من res.data.lawyers
+        this.lawyers = res?.data?.lawyers || (Array.isArray(res?.data) ? res.data : []);
+        this.cdr.markForCheck();
+      },
+      error: () => this.cdr.markForCheck()
+    });
+
     this.load();
   }
 
   load() {
     this.loading = true;
+    this.cdr.markForCheck();
+
     const params: any = {};
     if (this.statusFilter) params.status = this.statusFilter;
+
     this.svc.getAll(params).subscribe({
-      next: res => { this.deadlines = (res as any).data || []; this.loading = false; },
-      error: () => { this.loading = false; }
+      next: (res: any) => {
+        console.log('Deadlines API Response:', res);
+        
+        // استخراج المصفوفة بناءً على الهيكل الفعلي: res.data.deadlines
+        if (res?.data?.deadlines && Array.isArray(res.data.deadlines)) {
+          this.deadlines = res.data.deadlines;
+        } else if (res?.data && Array.isArray(res.data)) {
+          this.deadlines = res.data;
+        } else if (Array.isArray(res)) {
+          this.deadlines = res;
+        } else {
+          this.deadlines = [];
+        }
+        
+        console.log('Processed Deadlines Array:', this.deadlines);
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      }
     });
   }
 
   addDeadline() {
-    if (!this.form.case || !this.form.dueDate || !this.form.responsibleLawyer) { this.formError = 'يرجى تعبئة الحقول المطلوبة'; return; }
-    this.saving = true; this.formError = '';
+    if (!this.form.case || !this.form.dueDate || !this.form.responsibleLawyer) {
+      this.formError = 'يرجى تعبئة الحقول المطلوبة';
+      this.cdr.markForCheck();
+      return;
+    }
+    this.saving = true;
+    this.formError = '';
+    this.cdr.markForCheck();
+
     this.svc.create(this.form as any).subscribe({
-      next: () => { this.saving = false; this.showForm = false; this.form = { case: '', type: 'appeal', dueDate: '', responsibleLawyer: '', notes: '' }; this.load(); },
-      error: err => { this.formError = err?.error?.message || 'خطأ'; this.saving = false; }
+      next: () => {
+        this.saving = false;
+        this.showForm = false;
+        this.form = { case: '', type: 'appeal', dueDate: '', responsibleLawyer: '', notes: '' };
+        this.load();
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.formError = err?.error?.message || 'خطأ';
+        this.saving = false;
+        this.cdr.markForCheck();
+      }
     });
   }
 
-  updateStatus(d: any) { this.svc.updateStatus(d._id, d.status).subscribe({ error: () => {} }); }
-  isPast(date: string) { return new Date(date) < new Date(); }
+  updateStatus(d: any) {
+    this.svc.updateStatus(d._id, d.status).subscribe({
+      next: () => this.cdr.markForCheck(),
+      error: () => this.cdr.markForCheck()
+    });
+  }
+
+  isPast(date: string) {
+    return new Date(date) < new Date();
+  }
 
   typeLabel(t: string) {
-    const m: any = { appeal: 'استئناف', cassation: 'نقض', objection: 'اعتراض', response: 'رد', statute_of_limitations: 'تقادم', execution: 'تنفيذ' };
+    const m: any = { 
+      appeal: 'استئناف', 
+      cassation: 'نقض', 
+      objection: 'اعتراض', 
+      response: 'رد', 
+      statute_of_limitations: 'تقادم', 
+      execution: 'تنفيذ',
+      document_submission: 'تقديم مستندات',
+      response_deadline: 'موعد رد'
+    };
     return m[t] || t;
   }
+
   statusLabel(s: string) {
-    const m: any = { pending: 'معلقة', completed: 'مكتملة', missed: 'فائتة', cancelled: 'ملغاة' };
+    const m: any = { 
+      pending: 'معلقة', 
+      completed: 'مكتملة', 
+      missed: 'فائتة', 
+      cancelled: 'ملغاة',
+      due_soon: 'قريب الاستحقاق'
+    };
     return m[s] || s;
   }
 }
