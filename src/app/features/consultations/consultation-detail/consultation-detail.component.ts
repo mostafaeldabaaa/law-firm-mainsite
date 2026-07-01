@@ -1,8 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ConsultationsService, UsersService } from '../../../core/services/index';
+import { firestoreDb } from '../../../core/firebase.config';
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  Unsubscribe,
+} from 'firebase/firestore';
 
 @Component({
   selector: 'app-consultation-detail',
@@ -49,10 +57,10 @@ import { ConsultationsService, UsersService } from '../../../core/services/index
         <div class="card messages-card">
           <h2>المحادثة</h2>
           <div class="messages">
-            <div class="message" *ngFor="let m of consult.messages" [class.mine]="m.from?._id === currentUserId">
-              <div class="msg-sender">{{ m.from?.name }}</div>
+            <div class="message" *ngFor="let m of consult.messages" [class.mine]="m.from?._id === currentUserId || m.senderId === currentUserId">
+              <div class="msg-sender">{{ m.from?.name || m.senderName }}</div>
               <div class="msg-text">{{ m.text }}</div>
-              <div class="msg-time">{{ m.sentAt | date:'dd/MM HH:mm' }}</div>
+              <div class="msg-time">{{ (m.sentAt || m.createdAt) | date:'dd/MM HH:mm' }}</div>
             </div>
             <div class="no-msg" *ngIf="!consult.messages?.length">لا توجد رسائل بعد</div>
           </div>
@@ -91,28 +99,80 @@ import { ConsultationsService, UsersService } from '../../../core/services/index
     .status-closed { background: #edf2f7; color: #4a5568; }
   `]
 })
-export class ConsultationDetailComponent implements OnInit {
+export class ConsultationDetailComponent implements OnInit, OnDestroy {
   consult: any = null; lawyers: any[] = [];
   loading = true; replyText = ''; sending = false;
   selectedLawyer = ''; isAdmin = false; currentUserId = '';
+
+  // بيوقف الاشتراك في Firestore لما نغادر الصفحة، عشان نمنع تسريب الذاكرة
+  private unsubscribeMessages: Unsubscribe | null = null;
 
   constructor(private route: ActivatedRoute, private svc: ConsultationsService, private usersSvc: UsersService) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     try { const u = JSON.parse(localStorage.getItem('user') || '{}'); this.currentUserId = u._id; this.isAdmin = ['super_admin', 'branch_manager', 'senior_lawyer', 'lawyer'].includes(u.role); } catch {}
+
     this.svc.getById(id).subscribe({
-      next: res => { this.consult = (res as any).data || res; this.loading = false; },
+      next: res => {
+        this.consult = (res as any).data || res;
+        this.loading = false;
+        // بعد ما نجيب البيانات الأولية عن طريق HTTP، نبدأ الاستماع
+        // اللحظي على Firestore عشان أي رسالة جديدة تظهر فورًا.
+        this.listenToLiveMessages(id);
+      },
       error: () => { this.loading = false; }
     });
     this.usersSvc.getLawyers().subscribe({ next: res => { this.lawyers = (res as any).data || []; } });
+  }
+
+  ngOnDestroy() {
+    // مهم جدًا: نوقف الاشتراك لما نسيب الصفحة، وإلا هيفضل شغال في الخلفية
+    if (this.unsubscribeMessages) {
+      this.unsubscribeMessages();
+    }
+  }
+
+  /**
+   * بيفتح اشتراك لحظي (onSnapshot) على مسار
+   * consultations/{id}/messages في Firestore.
+   * أي رسالة جديدة تتضاف من أي طرف (عميل أو محامي) — سواء من نفس
+   * المتصفح أو من جهاز تاني — هتوصل هنا فورًا من غير أي polling.
+   */
+  private listenToLiveMessages(consultationId: string) {
+    const messagesRef = collection(firestoreDb, 'consultations', consultationId, 'messages');
+    const q = query(messagesRef, orderBy('createdAt', 'asc'));
+
+    this.unsubscribeMessages = onSnapshot(q, (snapshot) => {
+      const liveMessages = snapshot.docs.map(doc => {
+        const data: any = doc.data();
+        return {
+          _id: doc.id,
+          text: data.text,
+          senderId: data.senderId,
+          senderName: data.senderName || '',
+          createdAt: data.createdAt,
+        };
+      });
+
+      if (this.consult) {
+        this.consult = { ...this.consult, messages: liveMessages };
+      }
+    }, (err) => {
+      // لو Firestore فشل لأي سبب (اتصال، صلاحيات...)، منكسرش الصفحة —
+      // المستخدم لسه شايف آخر نسخة جت من الـ HTTP request الأساسي.
+      console.error('Firestore live messages error:', err);
+    });
   }
 
   sendReply() {
     if (!this.replyText.trim()) return;
     this.sending = true;
     this.svc.sendMessage(this.consult._id, this.replyText).subscribe({
-      next: res => { this.consult = (res as any).data || res; this.replyText = ''; this.sending = false; },
+      // مش محتاجين نحدّث consult يدويًا من الـ response تاني —
+      // الـ Firestore listener هيمسك الرسالة الجديدة أوتوماتيك أول
+      // ما الباك إند يكتبها هناك بعد الحفظ في MongoDB.
+      next: () => { this.replyText = ''; this.sending = false; },
       error: () => { this.sending = false; }
     });
   }
