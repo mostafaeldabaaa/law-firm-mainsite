@@ -2,6 +2,9 @@
 <aside class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
   <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
     <span class="text-sm text-gray-400">{{ consultations.length }} استشارة</span>
+    @if (pendingCount > 0) {
+      <span class="text-xs font-medium bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full">{{ pendingCount }} طلبات جديدة</span>
+    }
   </div>
 
   @if (loading) {
@@ -29,9 +32,14 @@
               [class.text-gray-500]="item.status === 'closed'">
               {{ statusLabels[item.status] }}
             </span>
-            <h3 class="text-[15px] font-semibold text-gray-900 text-right leading-snug">
-              {{ item.subject }}
-            </h3>
+            <div class="flex items-center gap-2 min-w-0">
+              <h3 class="text-[15px] font-semibold text-gray-900 text-right leading-snug truncate">
+                {{ item.subject }}
+              </h3>
+              @if (hasUnread(item)) {
+                <span class="shrink-0 w-2 h-2 rounded-full bg-red-500" title="نشاط جديد"></span>
+              }
+            </div>
           </div>
 
           <p class="text-sm text-gray-500 mt-2 text-right line-clamp-2">
@@ -39,9 +47,11 @@
           </p>
 
           <div class="flex items-center justify-end gap-1.5 mt-2 text-xs text-gray-400">
-            <span>{{ item.client.fullName }}</span>
-            <span>·</span>
-            <span>{{ item.client.companyName || item.category }}</span>
+            <span>{{ item.client?.fullName || 'عميل غير معروف' }}</span>
+            @if (item.client?.companyName || item.category) {
+              <span>·</span>
+              <span>{{ item.client?.companyName || item.category }}</span>
+            }
           </div>
         </li>
       }

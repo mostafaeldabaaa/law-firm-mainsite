@@ -1,0 +1,76 @@
+<div class="p-6 max-w-3xl mx-auto" dir="rtl">
+  <a routerLink="/cases" class="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 mb-4">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+    العودة
+  </a>
+
+  <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8">
+    <div class="flex items-center gap-2 mb-1">
+      <span class="w-1 h-5 bg-amber-500 rounded-full"></span>
+      <span class="text-xs text-amber-600 tracking-widest font-medium">نظام المحاماة</span>
+    </div>
+    <h1 class="text-xl font-bold text-[#0f1d33] mb-6">{{ isEdit ? 'تعديل القضية' : 'إنشاء قضية جديدة' }}</h1>
+
+    @if (error) {
+      <p class="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3 mb-5">{{ error }}</p>
+    }
+
+    <div class="grid sm:grid-cols-2 gap-5">
+      <div class="sm:col-span-2">
+        <label class="block text-sm text-gray-600 mb-1.5">عنوان القضية *</label>
+        <input type="text" [(ngModel)]="form.title" placeholder="أدخل عنوان القضية"
+               class="w-full text-sm text-gray-900 placeholder-gray-400 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-400/20" />
+      </div>
+
+      <div>
+        <label class="block text-sm text-gray-600 mb-1.5">نوع القضية *</label>
+        <select [(ngModel)]="form.caseType"
+                class="w-full text-sm text-gray-900 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-400/20">
+          <option value="">اختر نوع القضية</option>
+          @for (t of caseTypes; track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm text-gray-600 mb-1.5">العميل *</label>
+        <select [(ngModel)]="form.clientId"
+                class="w-full text-sm text-gray-900 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-400/20">
+          <option value="">{{ loadingClients ? 'جاري التحميل...' : 'اختر العميل' }}</option>
+          @for (c of clients; track c._id) {
+            <option [value]="c._id">{{ clientName(c) }}</option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm text-gray-600 mb-1.5">المحامي المسؤول *</label>
+        <select [(ngModel)]="form.leadLawyerId"
+                class="w-full text-sm text-gray-900 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-400/20">
+          <option value="">{{ loadingLawyers ? 'جاري التحميل...' : 'اختر المحامي' }}</option>
+          @for (l of lawyers; track l._id) {
+            <option [value]="l._id">{{ lawyerName(l) }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="sm:col-span-2">
+        <label class="block text-sm text-gray-600 mb-1.5">وصف القضية</label>
+        <textarea [(ngModel)]="form.description" rows="4" placeholder="أدخل وصف القضية..."
+                  class="w-full text-sm text-gray-900 placeholder-gray-400 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-400/20 resize-y"></textarea>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3 mt-7">
+      <button (click)="submit()" [disabled]="loading"
+              class="px-6 py-2.5 rounded-xl text-sm font-medium bg-[#0f1d33] hover:bg-[#16294a] text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+        {{ loading ? 'جاري الحفظ...' : (isEdit ? 'حفظ التعديلات' : 'إنشاء القضية') }}
+      </button>
+      <a routerLink="/cases" class="px-6 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 border border-gray-200 transition-colors">
+        إلغاء
+      </a>
+    </div>
+  </div>

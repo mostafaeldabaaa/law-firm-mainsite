@@ -1,0 +1,167 @@
+<!-- case-detail.component.html -->
+<div dir="rtl" class="max-w-5xl mx-auto px-6 py-8">
+
+  <!-- رابط العودة -->
+  <a routerLink="/cases" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-5 transition-colors">
+    <span>→</span>
+    <span>العودة للقضايا</span>
+  </a>
+
+  <!-- Skeleton أثناء التحميل -->
+  @if (loading()) {
+    <div class="animate-pulse space-y-4">
+      <div class="h-7 bg-gray-100 rounded w-1/3"></div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="h-40 bg-white border border-gray-100 rounded-2xl"></div>
+        <div class="h-40 bg-white border border-gray-100 rounded-2xl"></div>
+      </div>
+    </div>
+  }
+
+  @if (!loading() && case(); as c) {
+    <!-- هيدر القضية -->
+    <div class="flex items-start justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <span
+          class="text-xs font-medium px-3 py-1.5 rounded-full"
+          [class]="statusBg(c.status) + ' ' + statusText(c.status)">
+          {{ statusLabel(c.status) }}
+        </span>
+        <a
+          [routerLink]="['/cases', c._id, 'edit']"
+          class="inline-flex items-center gap-1.5 border border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <span>✏️</span>
+          <span>تعديل</span>
+        </a>
+      </div>
+      <div class="text-right">
+        <h1 class="text-2xl font-bold text-gray-900">{{ c.title }}</h1>
+        <span class="text-sm text-gray-400 mt-1 block">رقم القضية: {{ c.caseNumber }}</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+
+      <!-- بطاقة معلومات القضية -->
+      <div class="bg-white rounded-2xl border border-gray-100 p-5">
+        <h2 class="text-[15px] font-semibold text-gray-900 mb-4 text-right">معلومات القضية</h2>
+
+        <div class="flex justify-between items-center py-2.5 border-b border-gray-50 text-sm">
+          <strong class="text-gray-900 font-medium">{{ c.client.name || 'غير محدد' }}</strong>
+          <span class="text-gray-400">العميل</span>
+        </div>
+
+        <div class="flex justify-between items-center py-2.5 border-b border-gray-50 text-sm">
+          <strong class="text-gray-900 font-medium">{{ leadLawyerName() }}</strong>
+          <span class="text-gray-400">المحامي المسؤول</span>
+        </div>
+
+        <div class="flex justify-between items-center py-2.5 border-b border-gray-50 text-sm">
+          <strong class="text-gray-900 font-medium">{{ c.caseType || 'غير محدد' }}</strong>
+          <span class="text-gray-400">نوع القضية</span>
+        </div>
+
+        <div class="flex justify-between items-center py-2.5 text-sm">
+          <strong class="text-gray-900 font-medium">{{ c.createdAt | date:'d MMM yyyy' }}</strong>
+          <span class="text-gray-400">تاريخ الإنشاء</span>
+        </div>
+
+        @if (c.description) {
+          <div class="mt-3 pt-3 border-t border-gray-50">
+            <span class="text-gray-400 text-sm block mb-1">الوصف</span>
+            <p class="text-sm text-gray-700 leading-relaxed">{{ c.description }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- بطاقة تغيير الحالة -->
+      <div class="bg-white rounded-2xl border border-gray-100 p-5">
+        <h2 class="text-[15px] font-semibold text-gray-900 mb-4 text-right">تغيير الحالة</h2>
+
+        <select
+          [(ngModel)]="newStatus"
+          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 mb-3 outline-none focus:border-gray-400 transition-colors">
+          @for (opt of statusOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+
+        <textarea
+          [(ngModel)]="statusNote"
+          placeholder="ملاحظة (اختياري)"
+          rows="2"
+          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 mb-3 outline-none focus:border-gray-400 transition-colors resize-none"></textarea>
+
+        <button
+          (click)="updateStatus()"
+          [disabled]="updating()"
+          class="w-full bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ updating() ? 'جاري التحديث...' : 'تحديث الحالة' }}
+        </button>
+
+        @if (statusSuccess()) {
+          <div class="mt-3 text-sm text-emerald-600 flex items-center gap-1.5">
+            <span>✅</span>
+            <span>تم التحديث بنجاح</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- بطاقة إضافة ملاحظة -->
+    <div class="bg-white rounded-2xl border border-gray-100 p-5 mb-5">
+      <h2 class="text-[15px] font-semibold text-gray-900 mb-4 text-right">إضافة ملاحظة</h2>
+      <div class="flex gap-3 items-end">
+        <textarea
+          [(ngModel)]="noteText"
+          placeholder="اكتب الملاحظة هنا..."
+          rows="2"
+          class="flex-1 px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 outline-none focus:border-gray-400 transition-colors resize-none"></textarea>
+        <button
+          (click)="addNote()"
+          [disabled]="addingNote() || !noteText.trim()"
+          class="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0">
+          {{ addingNote() ? 'جاري الإضافة...' : 'إضافة' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- السجل الزمني -->
+    @if (c.timeline?.length) {
+      <div class="bg-white rounded-2xl border border-gray-100 p-5">
+        <h2 class="text-[15px] font-semibold text-gray-900 mb-4 text-right">السجل الزمني</h2>
+
+        <div class="relative pr-1">
+          @for (t of c.timeline; track $index; let last = $last) {
+            <div class="flex gap-3 pb-5 last:pb-0 relative">
+              @if (!last) {
+                <span class="absolute right-[4px] top-3 bottom-0 w-px bg-gray-100"></span>
+              }
+              <span class="w-2.5 h-2.5 rounded-full bg-gray-900 mt-1.5 shrink-0 relative z-10"></span>
+              <div class="flex-1 text-right">
+                <div class="text-sm font-medium text-gray-800">{{ timelineLabel(t.action) }}</div>
+                @if (t.note) {
+                  <p class="text-sm text-gray-500 mt-1 leading-relaxed">{{ t.note }}</p>
+                }
+                <div class="text-xs text-gray-400 mt-1.5">
+                  @if (t.by?.name) {
+                    <span>{{ t.by.name }}</span>
+                    <span class="mx-1">—</span>
+                  }
+                  <span>{{ t.at | date:'d MMM yyyy، h:mm a' }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+
+  @if (!loading() && !case()) {
+    <div class="bg-white rounded-2xl border border-gray-100 py-20 flex flex-col items-center justify-center text-center gap-3">
+      <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center text-2xl">📁</div>
+      <p class="text-gray-700 font-medium">تعذر العثور على القضية</p>
+    </div>
+  }
+</div>

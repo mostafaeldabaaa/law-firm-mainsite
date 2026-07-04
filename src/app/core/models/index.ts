@@ -1,7 +1,12 @@
 // ─── Auth ───────────────────────────────────────────────────────────────────
 export interface LoginRequest { email: string; password: string; }
-export interface RegisterRequest { name: string; email: string; password: string; phone?: string; }
-export interface AuthResponse { accessToken: string; refreshToken: string; user: User; }
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+}export interface AuthResponse { accessToken: string; refreshToken: string; user: User; }
 
 // ─── User ────────────────────────────────────────────────────────────────────
 export type Role = 'super_admin' | 'branch_manager' | 'senior_lawyer' | 'lawyer' | 'secretary' | 'client';
@@ -26,6 +31,7 @@ export interface Case {
   leadLawyer: User;
   lawyers?: User[];
   description?: string;
+   caseType?: string; 
   outcome?: { result: 'won' | 'lost' | 'settled' | 'dismissed'; summary?: string; date?: string };
   timeline?: TimelineEntry[];
   createdAt: string;

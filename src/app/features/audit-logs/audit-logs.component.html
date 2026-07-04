@@ -1,0 +1,89 @@
+<div class="audit-logs-container p-4">
+  <h2 class="text-xl font-bold mb-4">سجل العمليات (Audit Logs)</h2>
+
+  <!-- فلاتر -->
+  <div class="filters flex items-center gap-3 mb-4">
+    <label for="outcomeFilter">النتيجة:</label>
+    <select
+      id="outcomeFilter"
+      [(ngModel)]="outcomeFilter"
+      (change)="page = 1; load()"
+      class="border rounded px-2 py-1"
+    >
+      <option value="">الكل</option>
+      <option value="SUCCESS">ناجح</option>
+      <option value="FAILURE">فاشل</option>
+    </select>
+
+    <button (click)="load()" class="border rounded px-3 py-1 bg-gray-100 hover:bg-gray-200">
+      تحديث
+    </button>
+  </div>
+
+  <!-- حالة التحميل -->
+  <div *ngIf="loading" class="text-center py-6 text-gray-500">
+    جاري التحميل...
+  </div>
+
+  <!-- لا يوجد بيانات -->
+  <div *ngIf="!loading && logs.length === 0" class="text-center py-6 text-gray-500">
+    لا توجد سجلات لعرضها
+  </div>
+
+  <!-- الجدول -->
+  <table *ngIf="!loading && logs.length > 0" class="w-full border-collapse text-sm">
+    <thead>
+      <tr class="bg-gray-100 text-right">
+        <th class="p-2 border">التاريخ</th>
+        <th class="p-2 border">المستخدم</th>
+        <th class="p-2 border">الإجراء (Action)</th>
+        <th class="p-2 border">المسار (Path)</th>
+        <th class="p-2 border">الطريقة (Method)</th>
+        <th class="p-2 border">كود الحالة</th>
+        <th class="p-2 border">النتيجة</th>
+        <th class="p-2 border">IP</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let log of logs" class="border-b hover:bg-gray-50">
+        <td class="p-2 border">{{ log.createdAt | date: 'yyyy-MM-dd HH:mm' }}</td>
+        <td class="p-2 border">{{ userName(log) }}</td>
+        <td class="p-2 border">{{ log.action || '-' }}</td>
+        <td class="p-2 border">{{ log.path || '-' }}</td>
+        <td class="p-2 border">{{ log.method || '-' }}</td>
+        <td class="p-2 border">{{ log.statusCode ?? '-' }}</td>
+        <td class="p-2 border">
+          <span
+            *ngIf="log.statusCode != null"
+            [ngClass]="isSuccess(log.statusCode) ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'"
+          >
+            {{ isSuccess(log.statusCode) ? 'ناجح' : 'فاشل' }}
+          </span>
+          <span *ngIf="log.statusCode == null">-</span>
+        </td>
+        <td class="p-2 border">{{ log.ipAddress || '-' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- الترقيم (Pagination) -->
+  <div *ngIf="!loading && totalPages > 1" class="flex items-center justify-center gap-2 mt-4">
+    <button
+      (click)="goToPage(page - 1)"
+      [disabled]="page <= 1"
+      class="px-3 py-1 border rounded disabled:opacity-40"
+    >
+      السابق
+    </button>
+
+    <span>صفحة {{ page }} من {{ totalPages }}</span>
+
+    <button
+      (click)="goToPage(page + 1)"
+      [disabled]="page >= totalPages"
+      class="px-3 py-1 border rounded disabled:opacity-40"
+    >
+      التالي
+    </button>
+  </div>
+</div>

@@ -1,0 +1,304 @@
+<div class="min-h-screen bg-gray-50 p-6" dir="rtl">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="text-right">
+      <h1 class="text-3xl font-bold text-gray-900">العملاء</h1>
+      <p class="text-gray-500 text-sm mt-1">إدارة بيانات العملاء والشركات</p>
+    </div>
+    <button
+      (click)="openAddForm()"
+      class="flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
+    >
+      <span class="text-lg">+</span>
+      إضافة عميل
+    </button>
+  </div>
+
+  <!-- Add / Edit Client Modal -->
+  <div
+    *ngIf="showForm"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+    (click)="onOverlayClick($event)"
+  >
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-5">{{ isEditing ? 'تعديل بيانات العميل' : 'إضافة عميل جديد' }}</h2>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-600">الاسم الأول *</label>
+          <input
+            type="text"
+            [(ngModel)]="form.firstName"
+            placeholder="أدخل الاسم الأول"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition text-gray-900 placeholder:text-gray-400"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-600">الاسم الأخير *</label>
+          <input
+            type="text"
+            [(ngModel)]="form.lastName"
+            placeholder="أدخل الاسم الأخير"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition text-gray-900 placeholder:text-gray-400"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-600">البريد الإلكتروني *</label>
+          <input
+            type="email"
+            [(ngModel)]="form.email"
+            placeholder="example@email.com"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition text-gray-900 placeholder:text-gray-400"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-600">رقم الهاتف</label>
+          <input
+            type="tel"
+            [(ngModel)]="form.phone"
+            placeholder="01xxxxxxxxx"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition text-gray-900 placeholder:text-gray-400"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-600">النوع</label>
+          <select
+            [(ngModel)]="form.type"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 bg-white text-gray-900"
+          >
+            <option value="individual">فرد</option>
+            <option value="company">شركة</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1.5" *ngIf="form.type === 'individual'">
+          <label class="text-sm font-medium text-gray-600">الرقم القومي</label>
+          <input
+            type="text"
+            [(ngModel)]="form.nationalId"
+            placeholder="14 رقم"
+            maxlength="14"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition text-gray-900 placeholder:text-gray-400"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5 col-span-2" *ngIf="form.type === 'company'">
+          <label class="text-sm font-medium text-gray-600">اسم الشركة</label>
+          <input
+            type="text"
+            [(ngModel)]="form.companyName"
+            placeholder="أدخل اسم الشركة"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition text-gray-900 placeholder:text-gray-400"
+          />
+        </div>
+      </div>
+
+      <div
+        *ngIf="formError"
+        class="mt-4 bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg"
+      >
+        {{ formError }}
+      </div>
+
+      <div class="flex gap-3 mt-5">
+        <button
+          (click)="saveClient()"
+          [disabled]="saving"
+          class="flex-1 bg-gray-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {{ saving ? 'جاري الحفظ...' : (isEditing ? 'تحديث' : 'حفظ') }}
+        </button>
+        <button
+          (click)="closeForm()"
+          class="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+        >
+          إلغاء
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div
+    *ngIf="selectedClient"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+    (click)="selectedClient = null"
+  >
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6" (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-lg font-bold text-gray-900">تفاصيل العميل</h2>
+        <button (click)="selectedClient = null" class="text-gray-400 hover:text-gray-700 text-xl leading-none">✕</button>
+      </div>
+      <div class="space-y-3 text-sm">
+        <div>
+          <span class="text-gray-500">الاسم: </span>
+          <span class="text-gray-900 font-medium">{{ selectedClient.firstName }} {{ selectedClient.lastName }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">النوع: </span>
+          <span class="text-gray-900">{{ selectedClient.type === 'company' ? 'شركة' : 'فرد' }}</span>
+        </div>
+        <div *ngIf="selectedClient.type === 'company'">
+          <span class="text-gray-500">اسم الشركة: </span>
+          <span class="text-gray-900">{{ selectedClient.companyName || '-' }}</span>
+        </div>
+        <div *ngIf="selectedClient.type !== 'company'">
+          <span class="text-gray-500">الرقم القومي: </span>
+          <span class="text-gray-900 font-mono">{{ selectedClient.nationalId || '-' }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">الهاتف: </span>
+          <span class="text-gray-900 font-mono">{{ selectedClient.phone || '-' }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">البريد الإلكتروني: </span>
+          <span class="text-gray-900">{{ selectedClient.email }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">عدد القضايا: </span>
+          <span class="text-gray-900">{{ selectedClient.casesCount ?? 0 }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">تاريخ الإنشاء: </span>
+          <span class="text-gray-900">{{ selectedClient.createdAt | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+    <!-- Search Bar -->
+    <div class="p-4 border-b border-gray-100 flex justify-end">
+      <div class="relative w-72">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch($event)"
+          placeholder="بحث بالاسم، رقم الهاتف..."
+          class="w-full border border-gray-200 rounded-xl pl-4 pr-10 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition text-gray-900 placeholder:text-gray-400"
+        />
+        <svg
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"
+          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="flex items-center justify-center py-20 text-gray-400">
+      <div class="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin ml-2"></div>
+      جاري التحميل...
+    </div>
+
+    <!-- Table -->
+    <div *ngIf="!loading" class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-gray-50 text-right">
+            <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">الاسم</th>
+            <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">النوع</th>
+            <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">الهاتف</th>
+            <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">البريد الإلكتروني</th>
+            <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">الرقم القومي</th>
+            <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">عدد القضايا</th>
+            <th class="px-5 py-3.5 text-sm font-semibold text-gray-500 font-medium">إجراءات</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          <tr *ngFor="let client of filteredClients" class="hover:bg-gray-50/50 transition-colors">
+            <td class="px-5 py-4 text-sm font-medium text-gray-900">
+              {{ client.firstName }} {{ client.lastName }}
+            </td>
+            <td class="px-5 py-4">
+              <span *ngIf="client.type === 'company'"
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-400 text-white">
+                شركة
+              </span>
+              <span *ngIf="client.type !== 'company'"
+                class="text-sm text-gray-600">
+                فرد
+              </span>
+            </td>
+            <td class="px-5 py-4 text-sm text-gray-700 font-mono tracking-wide">{{ client.phone }}</td>
+            <td class="px-5 py-4 text-sm text-gray-600 dir-ltr text-left">{{ client.email }}</td>
+            <td class="px-5 py-4 text-sm text-gray-500 font-mono">
+              {{ client.nationalId || '-' }}
+            </td>
+            <td class="px-5 py-4">
+              <span class="inline-flex items-center justify-center w-8 h-8 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700">
+                {{ client.casesCount ?? 0 }}
+              </span>
+            </td>
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-3">
+                <!-- Delete -->
+                <button (click)="deleteClient(client)" class="text-gray-500 hover:text-red-600 transition-colors" title="حذف">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" />
+                  </svg>
+                </button>
+                <!-- Edit -->
+                <button (click)="openEditForm(client)" class="text-gray-500 hover:text-gray-900 transition-colors" title="تعديل">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                  </svg>
+                </button>
+                <!-- View -->
+                <button (click)="viewDetails(client)" class="text-gray-500 hover:text-gray-900 transition-colors" title="تفاصيل">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="filteredClients.length === 0">
+            <td colspan="7" class="text-center py-16 text-gray-400">
+              <div class="flex flex-col items-center gap-2">
+                <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span class="text-sm">لا يوجد عملاء</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div
+      *ngIf="!loading && meta.totalPages > 1"
+      class="flex items-center justify-between px-5 py-3.5 border-t border-gray-100"
+    >
+      <span class="text-sm text-gray-500">
+        إجمالي {{ meta.total }} عميل
+      </span>
+      <div class="flex gap-2">
+        <button
+          (click)="goToPage(meta.page - 1)"
+          [disabled]="meta.page === 1"
+          class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors"
+        >السابق</button>
+        <span class="px-3 py-1.5 text-sm bg-gray-900 text-white rounded-lg">
+          {{ meta.page }}
+        </span>
+        <button
+          (click)="goToPage(meta.page + 1)"
+          [disabled]="meta.page === meta.totalPages"
+          class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors"
+        >التالي</button>
+      </div>
+    </div>
+  </div>
+</div>

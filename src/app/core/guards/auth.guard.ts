@@ -21,7 +21,7 @@ export const publicGuard: CanActivateFn = () => {
 export const adminGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
-  if (auth.hasRole('super_admin', 'branch_manager')) return true;
+  if (auth.hasRole('super_admin', 'branch_manager', 'senior_lawyer', 'lawyer', 'secretary')) return true;
   router.navigate(['/dashboard']);
   return false;
 };

@@ -54,20 +54,46 @@ import { SearchService } from '../../core/services/index';
   `]
 })
 export class SearchComponent implements OnInit {
-  query = ''; results: any[] = []; loading = false; searched = false; lastQuery = '';
+  query = '';
+  results: any[] = [];
+  loading = false;
+  searched = false;
+  lastQuery = '';
+  totalResults = 0;
 
   constructor(private svc: SearchService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(p => { if (p['q']) { this.query = p['q']; this.search(); } });
+    this.route.queryParams.subscribe(p => {
+      if (p['q']) {
+        this.query = p['q'];
+        this.search();
+      }
+    });
   }
 
   search() {
     if (!this.query.trim()) return;
-    this.loading = true; this.searched = false; this.lastQuery = this.query;
+    this.loading = true;
+    this.searched = false;
+    this.lastQuery = this.query;
+
     this.svc.search(this.query).subscribe({
-      next: res => { this.results = (res as any).data || []; this.loading = false; this.searched = true; },
-      error: () => { this.loading = false; this.searched = true; }
+      next: (res: any) => {
+        const data = res?.data || {};
+        const cases = (data.cases || []).map((item: any) => ({ type: 'case', item }));
+        const documents = (data.documents || []).map((item: any) => ({ type: 'document', item }));
+        this.results = [...cases, ...documents];
+        this.totalResults = data.totalResults ?? this.results.length;
+        this.loading = false;
+        this.searched = true;
+      },
+      error: () => {
+        this.results = [];
+        this.totalResults = 0;
+        this.loading = false;
+        this.searched = true;
+      }
     });
   }
 }

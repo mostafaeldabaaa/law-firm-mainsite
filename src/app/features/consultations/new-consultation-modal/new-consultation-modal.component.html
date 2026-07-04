@@ -14,6 +14,24 @@
     </div>
 
     <div class="space-y-4 text-right">
+      @if (!isSelfClient()) {
+        <div>
+          <label class="block text-sm text-gray-600 mb-1.5">العميل</label>
+          <select
+            [(ngModel)]="clientId"
+            [ngModelOptions]="{ standalone: true }"
+            class="w-full text-sm text-gray-900 bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-gray-900/10">
+            <option value="">{{ loadingClients() ? 'جاري تحميل العملاء...' : 'اختر العميل' }}</option>
+            @for (c of clients(); track c._id) {
+              <option [value]="c._id">{{ clientDisplayName(c) }}</option>
+            }
+          </select>
+          @if (submitted() && !clientId().trim()) {
+            <p class="text-xs text-red-500 mt-1">يرجى اختيار العميل</p>
+          }
+        </div>
+      }
+
       <div>
         <label class="block text-sm text-gray-600 mb-1.5">عنوان الاستشارة</label>
         <input
@@ -21,7 +39,7 @@
           [ngModelOptions]="{ standalone: true }"
           type="text"
           placeholder="مثال: استفسار عن عقد إيجار"
-          class="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-gray-900/10" />
+          class="w-full text-sm text-gray-900 placeholder-gray-400 bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-gray-900/10" />
         @if (submitted() && !title().trim()) {
           <p class="text-xs text-red-500 mt-1">يرجى إدخال عنوان الاستشارة</p>
         }
@@ -34,7 +52,7 @@
           [ngModelOptions]="{ standalone: true }"
           rows="4"
           placeholder="اكتب وصفاً موجزاً لاستشارتك..."
-          class="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-gray-900/10"></textarea>
+          class="w-full text-sm text-gray-900 bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-gray-900/10"></textarea>
         @if (submitted() && !initialMessage().trim()) {
           <p class="text-xs text-red-500 mt-1">يرجى كتابة تفاصيل الاستفسار</p>
         }

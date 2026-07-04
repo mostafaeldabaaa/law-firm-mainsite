@@ -120,84 +120,112 @@
   </ng-container>
 
   <!-- ══════════════════════════════════════════════════════════
-       لوحة المدير / المحامي / السكرتارية
+       لوحة المدير / المحامي / السكرتارية — تصميم فاتح
   ═══════════════════════════════════════════════════════════ -->
   <ng-container *ngIf="!isClient">
 
-    <div class="mb-8">
-      <div class="flex items-center gap-2 mb-1">
-        <span class="w-1 h-5 bg-[#d4af37] rounded-full"></span>
-        <span class="text-xs text-[#d4af37] tracking-widest font-medium">نظام المحاماة</span>
+    <div class="flex items-start justify-between gap-4 mb-8 flex-wrap">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="w-1 h-5 bg-amber-500 rounded-full"></span>
+          <span class="text-xs text-amber-600 tracking-widest font-medium">نظام المحاماة</span>
+        </div>
+        <h1 class="text-[26px] font-bold text-[#0f1d33] m-0">نظرة عامة على نشاط المكتب</h1>
+        <p class="text-sm text-gray-400 mt-1.5 m-0">مرحبًا بك مجددًا، {{ fullName }}</p>
       </div>
-      <h1 class="text-[28px] font-bold text-[#eef1f8] m-0">لوحة التحكم</h1>
-      <p class="text-sm text-[#7d87a3] mt-1.5 m-0">نظرة عامة على نشاط المكتب</p>
+      <a routerLink="/cases/new"
+         class="inline-flex items-center gap-2 bg-[#0f1d33] hover:bg-[#16294a] text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors">
+        <span class="text-base leading-none">+</span>
+        قضية جديدة
+      </a>
     </div>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-      <div class="relative overflow-hidden bg-[#0f1527] rounded-2xl p-4 border border-[#1c2438]">
-        <div class="flex items-center gap-3">
-          <span class="text-lg bg-emerald-500/10 text-emerald-400 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">✅</span>
-          <div>
-            <div class="text-xl font-bold text-[#eef1f8] leading-none">{{ stats.pendingTasks }}</div>
-            <div class="text-xs text-[#7d87a3] mt-1">المهام المعلقة</div>
-          </div>
+    <!-- بطاقات الإحصائيات -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+      <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-lg bg-emerald-50 text-emerald-500 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">✅</span>
         </div>
+        <div class="text-2xl font-bold text-[#0f1d33] leading-none">{{ stats.pendingTasks }}</div>
+        <div class="text-xs text-gray-400 mt-2">المهام المعلقة</div>
       </div>
-      <div class="relative overflow-hidden bg-[#0f1527] rounded-2xl p-4 border border-[#1c2438]">
-        <div class="flex items-center gap-3">
-          <span class="text-lg bg-blue-500/10 text-blue-400 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">📅</span>
-          <div>
-            <div class="text-xl font-bold text-[#eef1f8] leading-none">{{ stats.upcomingSessions }}</div>
-            <div class="text-xs text-[#7d87a3] mt-1">الجلسات القادمة</div>
-          </div>
+
+      <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-lg bg-blue-50 text-blue-500 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">📅</span>
         </div>
+        <div class="text-2xl font-bold text-[#0f1d33] leading-none">{{ stats.upcomingSessions }}</div>
+        <div class="text-xs text-gray-400 mt-2">الجلسات القادمة</div>
       </div>
-      <div class="relative overflow-hidden bg-[#0f1527] rounded-2xl p-4 border border-[#1c2438]" *ngIf="isAdminLike">
-        <div class="flex items-center gap-3">
-          <span class="text-lg bg-purple-500/10 text-purple-400 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">🏢</span>
-          <div>
-            <div class="text-xl font-bold text-[#eef1f8] leading-none">{{ stats.totalClients }}</div>
-            <div class="text-xs text-[#7d87a3] mt-1">العملاء</div>
-          </div>
+
+      <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm" *ngIf="isAdminLike">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-lg bg-purple-50 text-purple-500 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">🏢</span>
         </div>
+        <div class="text-2xl font-bold text-[#0f1d33] leading-none">{{ stats.totalClients }}</div>
+        <div class="text-xs text-gray-400 mt-2">العملاء</div>
       </div>
-      <div class="relative overflow-hidden bg-[#0f1527] rounded-2xl p-4 border border-[#1c2438]" *ngIf="isAdminLike">
-        <div class="flex items-center gap-3">
-          <span class="text-lg bg-indigo-500/10 text-indigo-400 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">👥</span>
-          <div>
-            <div class="text-xl font-bold text-[#eef1f8] leading-none">{{ stats.totalLawyers }}</div>
-            <div class="text-xs text-[#7d87a3] mt-1">المحامون</div>
-          </div>
+
+      <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm" *ngIf="isAdminLike">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-lg bg-indigo-50 text-indigo-500 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">👥</span>
         </div>
+        <div class="text-2xl font-bold text-[#0f1d33] leading-none">{{ stats.totalLawyers }}</div>
+        <div class="text-xs text-gray-400 mt-2">المحامون</div>
       </div>
-      <div class="relative overflow-hidden bg-gradient-to-br from-[#162042] to-[#0f1527] rounded-2xl p-4 border border-[#d4af37]/25">
-        <div class="flex items-center gap-3">
-          <span class="text-lg bg-[#d4af37]/15 text-[#d4af37] w-10 h-10 rounded-xl flex items-center justify-center shrink-0">📈</span>
-          <div>
-            <div class="text-xl font-bold text-[#eef1f8] leading-none">{{ stats.activeCases }}</div>
-            <div class="text-xs text-[#7d87a3] mt-1">القضايا النشطة</div>
-          </div>
+
+      <div class="bg-gradient-to-br from-[#0f1d33] to-[#16294a] rounded-2xl p-4 border border-amber-400/20 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-lg bg-amber-400/15 text-amber-400 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">📈</span>
         </div>
-      </div>
-      <div class="relative overflow-hidden bg-[#0f1527] rounded-2xl p-4 border border-[#1c2438]">
-        <div class="flex items-center gap-3">
-          <span class="text-lg bg-slate-400/10 text-slate-300 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">💼</span>
-          <div>
-            <div class="text-xl font-bold text-[#eef1f8] leading-none">{{ stats.totalCases }}</div>
-            <div class="text-xs text-[#7d87a3] mt-1">إجمالي القضايا</div>
-          </div>
-        </div>
+        <div class="text-2xl font-bold text-white leading-none">{{ stats.totalCases }}</div>
+        <div class="text-xs text-white/50 mt-2">إجمالي القضايا</div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-4 mb-8">
-      <!-- Donut chart -->
-      <div class="bg-[#0f1527] rounded-2xl p-5 border border-[#1c2438]">
-        <h2 class="text-base font-semibold text-[#eef1f8] m-0 mb-5">توزيع الحالات</h2>
+    <!-- الجدول الرئيسي + توزيع القضايا -->
+    <div class="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4 mb-6">
+      <!-- الجلسات القادمة -->
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-semibold text-[#0f1d33] m-0">الجلسات القادمة</h2>
+          <a routerLink="/sessions" class="text-xs text-amber-600 font-medium hover:underline">عرض الكل</a>
+        </div>
+        <div class="text-center py-10 text-gray-300 text-sm" *ngIf="loadingUpcoming">جاري التحميل...</div>
+        <div class="overflow-x-auto" *ngIf="!loadingUpcoming">
+          <table class="w-full text-sm" *ngIf="upcomingSessionsList.length > 0">
+            <thead>
+              <tr class="border-b border-gray-100">
+                <th class="text-right font-medium text-gray-400 py-2.5 px-2 text-xs">الجلسة</th>
+                <th class="text-right font-medium text-gray-400 py-2.5 px-2 text-xs">المكان</th>
+                <th class="text-right font-medium text-gray-400 py-2.5 px-2 text-xs">التاريخ</th>
+                <th class="text-right font-medium text-gray-400 py-2.5 px-2 text-xs"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50 transition-colors"
+                  *ngFor="let s of upcomingSessionsList" [routerLink]="['/sessions', s._id]">
+                <td class="py-3 px-2 text-[#0f1d33] font-medium">{{ s.title || s.case?.title }}</td>
+                <td class="py-3 px-2 text-gray-400">{{ s.location }}</td>
+                <td class="py-3 px-2">
+                  <span class="text-amber-600 font-medium">{{ s.date | date:'d MMMM' }}</span>
+                  <span class="text-gray-400 text-xs mr-1">{{ s.startTime }}</span>
+                </td>
+                <td class="py-3 px-2 text-gray-300">‹</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-center py-10 text-gray-300 text-sm" *ngIf="upcomingSessionsList.length === 0">لا توجد جلسات قادمة</div>
+        </div>
+      </div>
+
+      <!-- توزيع القضايا -->
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <h2 class="text-base font-semibold text-[#0f1d33] m-0 mb-5">توزيع القضايا</h2>
         <div class="flex flex-col items-center gap-5" *ngIf="donutTotal > 0">
           <div class="relative">
-            <svg viewBox="0 0 140 140" class="w-36 h-36" style="filter: drop-shadow(0 0 14px rgba(212,175,55,0.18));">
-              <circle cx="70" cy="70" r="60" fill="none" stroke="#1c2438" stroke-width="16" />
+            <svg viewBox="0 0 140 140" class="w-32 h-32">
+              <circle cx="70" cy="70" r="60" fill="none" stroke="#f1f3f7" stroke-width="16" />
               <circle
                 *ngFor="let slice of donutSlices"
                 cx="70" cy="70" r="60" fill="none"
@@ -210,109 +238,63 @@
               />
             </svg>
             <div class="absolute inset-0 flex flex-col items-center justify-center">
-              <span class="text-2xl font-bold text-[#eef1f8]">{{ donutTotal }}</span>
-              <span class="text-[11px] text-[#5b6480]">إجمالي</span>
+              <span class="text-xl font-bold text-[#0f1d33]">{{ donutTotal }}</span>
+              <span class="text-[10px] text-gray-400">قضية</span>
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-x-4 gap-y-2 w-full">
-            <div class="flex items-center gap-2 text-sm text-[#8891a8]" *ngFor="let slice of donutSlices">
-              <span class="w-2.5 h-2.5 rounded-full shrink-0" [style.background]="slice.color"></span>
-              {{ slice.label }}
+          <div class="flex flex-col gap-2 w-full">
+            <div class="flex items-center justify-between text-xs" *ngFor="let slice of donutSlices">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full shrink-0" [style.background]="slice.color"></span>
+                <span class="text-gray-500">{{ slice.label }}</span>
+              </div>
+              <span class="font-medium text-[#0f1d33]">{{ donutTotal ? ((slice.value / donutTotal) * 100 | number:'1.0-0') : 0 }}%</span>
             </div>
           </div>
         </div>
-        <div class="text-center py-10 text-[#5b6480] text-sm" *ngIf="donutTotal === 0">لا توجد بيانات كافية</div>
-      </div>
-
-      <!-- Bar chart (عمودي) -->
-      <div class="bg-[#0f1527] rounded-2xl p-5 border border-[#1c2438]">
-        <h2 class="text-base font-semibold text-[#eef1f8] m-0 mb-5">القضايا حسب الحالة</h2>
-        <div class="flex items-end justify-around gap-3 h-48" *ngIf="statusReport.length > 0">
-          <div class="flex flex-col items-center gap-2 h-full justify-end" *ngFor="let r of statusReport">
-            <span class="text-sm font-semibold text-[#eef1f8]">{{ r.count }}</span>
-            <div class="w-9 bg-[#1c2438] rounded-lg flex-1 flex flex-col justify-end overflow-hidden">
-              <div class="bg-gradient-to-t from-[#d4af37] to-[#8a6d2a] rounded-lg transition-all" [style.height.%]="(r.count / barMax) * 100"></div>
-            </div>
-            <span class="text-xs text-[#7d87a3] text-center">{{ statusLabel(r.status) }}</span>
-          </div>
-        </div>
-        <div class="text-center py-10 text-[#5b6480] text-sm" *ngIf="statusReport.length === 0">لا توجد بيانات كافية</div>
+        <div class="text-center py-10 text-gray-300 text-sm" *ngIf="donutTotal === 0">لا توجد بيانات كافية</div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-      <!-- النشاط الأخير -->
-      <div class="bg-[#0f1527] rounded-2xl p-5 border border-[#1c2438]">
-        <h2 class="text-base font-semibold text-[#eef1f8] m-0 mb-4">النشاط الأخير</h2>
-        <div class="text-center py-8 text-[#5b6480] text-sm" *ngIf="loadingActivity">جاري التحميل...</div>
+    <!-- آخر الأنشطة + أحدث القضايا -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+      <!-- آخر الأنشطة -->
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm" *ngIf="isSuperAdmin">
+        <h2 class="text-base font-semibold text-[#0f1d33] m-0 mb-4">آخر الأنشطة</h2>
+        <div class="text-center py-8 text-gray-300 text-sm" *ngIf="loadingActivity">جاري التحميل...</div>
         <div class="flex flex-col" *ngIf="!loadingActivity">
-          <div class="flex items-center justify-between gap-3 py-3 border-b border-[#1c2438] last:border-0" *ngFor="let a of recentActivity">
+          <div class="flex items-center justify-between gap-3 py-3 border-b border-gray-50 last:border-0" *ngFor="let a of recentActivity">
             <div class="flex items-center gap-2.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#d4af37] shrink-0"></span>
-              <div class="text-sm text-[#c4cad9]">{{ a.text }}</div>
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+              <div class="text-sm text-gray-600">{{ a.text }}</div>
             </div>
-            <span class="text-xs text-[#5b6480] shrink-0">{{ timeAgo(a.date) }}</span>
+            <span class="text-xs text-gray-300 shrink-0">{{ timeAgo(a.date) }}</span>
           </div>
-          <div class="text-center py-8 text-[#5b6480] text-sm" *ngIf="recentActivity.length === 0">لا يوجد نشاط حديث</div>
+          <div class="text-center py-8 text-gray-300 text-sm" *ngIf="recentActivity.length === 0">لا يوجد نشاط حديث</div>
         </div>
       </div>
 
-      <!-- الجلسات القادمة -->
-      <div class="bg-[#0f1527] rounded-2xl p-5 border border-[#1c2438]">
-        <h2 class="text-base font-semibold text-[#eef1f8] m-0 mb-4">الجلسات القادمة</h2>
-        <div class="text-center py-8 text-[#5b6480] text-sm" *ngIf="loadingUpcoming">جاري التحميل...</div>
-        <div class="flex flex-col" *ngIf="!loadingUpcoming">
-          <a class="flex items-center justify-between gap-3 py-3 border-b border-[#1c2438] last:border-0 hover:bg-[#162042]/40 -mx-2 px-2 rounded-lg transition-colors"
-             *ngFor="let s of upcomingSessionsList" [routerLink]="['/sessions', s._id]">
+      <!-- أحدث القضايا (بديل بطاقة الأنشطة لغير المدير العام) -->
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-semibold text-[#0f1d33] m-0">أحدث القضايا</h2>
+          <a routerLink="/cases" class="text-xs text-amber-600 font-medium hover:underline">عرض الكل</a>
+        </div>
+        <div class="text-center py-10 text-gray-300 text-sm" *ngIf="loadingCases">جاري التحميل...</div>
+        <div class="flex flex-col" *ngIf="!loadingCases">
+          <a class="flex items-center justify-between gap-3 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors"
+             *ngFor="let c of recentCases" [routerLink]="['/cases', c._id]">
             <div>
-              <div class="text-sm font-medium text-[#eef1f8]">{{ s.title || s.case?.title }}</div>
-              <div class="text-xs text-[#5b6480] mt-0.5">{{ s.location }}</div>
+              <div class="text-sm font-medium text-[#0f1d33]">{{ c.title }}</div>
+              <div class="text-xs text-gray-400 mt-0.5">{{ c.caseNumber }} · {{ getName(c.client) }}</div>
             </div>
-            <div class="text-left shrink-0">
-              <div class="text-sm font-medium text-[#d4af37]">{{ s.date | date:'yyyy/M/d' }}</div>
-              <div class="text-xs text-[#5b6480]">{{ s.startTime }}</div>
-            </div>
+            <span class="text-xs font-medium bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full shrink-0">{{ statusLabel(c.status) }}</span>
           </a>
-          <div class="text-center py-8 text-[#5b6480] text-sm" *ngIf="upcomingSessionsList.length === 0">لا توجد جلسات قادمة</div>
+          <div class="text-center py-8 text-gray-300 text-sm" *ngIf="recentCases.length === 0">لا توجد قضايا</div>
         </div>
       </div>
     </div>
 
-    <div class="bg-[#0f1527] rounded-2xl p-5 border border-[#1c2438]">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-base font-semibold text-[#eef1f8] m-0">أحدث القضايا</h2>
-        <a routerLink="/cases" class="text-sm text-[#d4af37] font-medium hover:underline">عرض الكل</a>
-      </div>
-      <div class="text-center py-10 text-[#5b6480] text-sm" *ngIf="loadingCases">جاري التحميل...</div>
-      <div class="overflow-x-auto" *ngIf="!loadingCases">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="border-b border-[#1c2438]">
-              <th class="text-right font-medium text-[#7d87a3] py-2.5 px-2">رقم القضية</th>
-              <th class="text-right font-medium text-[#7d87a3] py-2.5 px-2">العنوان</th>
-              <th class="text-right font-medium text-[#7d87a3] py-2.5 px-2">العميل</th>
-              <th class="text-right font-medium text-[#7d87a3] py-2.5 px-2">الحالة</th>
-              <th class="text-right font-medium text-[#7d87a3] py-2.5 px-2">التاريخ</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="border-b border-[#1c2438] last:border-0 cursor-pointer hover:bg-[#162042]/30 transition-colors"
-                *ngFor="let c of recentCases" [routerLink]="['/cases', c._id]">
-              <td class="py-3 px-2 text-[#c4cad9]">{{ c.caseNumber }}</td>
-              <td class="py-3 px-2 text-[#c4cad9]">{{ c.title }}</td>
-              <td class="py-3 px-2 text-[#c4cad9]">{{ getName(c.client) }}</td>
-              <td class="py-3 px-2">
-                <span class="text-xs font-medium bg-[#d4af37]/10 text-[#d4af37] px-2.5 py-1 rounded-full">{{ statusLabel(c.status) }}</span>
-              </td>
-              <td class="py-3 px-2 text-[#5b6480]">{{ c.createdAt | date:'dd/MM/yyyy' }}</td>
-            </tr>
-            <tr *ngIf="recentCases.length === 0">
-              <td colspan="5" class="text-center text-[#5b6480] py-8">لا توجد قضايا</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </ng-container>
 
 </div>

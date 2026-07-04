@@ -13,7 +13,11 @@
       class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-700
              text-white text-sm font-medium rounded-xl transition-colors duration-150 no-underline"
     >
-      <span class="text-base">+</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
       إضافة قضية جديدة
     </a>
   </div>
@@ -28,7 +32,12 @@
 
       <!-- Search -->
       <div class="relative flex-1 min-w-[220px]">
-        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
         <input
           type="search"
           [(ngModel)]="search"
@@ -131,7 +140,7 @@
             <!-- Status Badge -->
             <td class="px-5 py-4">
               <span
-                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border"
                 [ngClass]="statusClasses(c.status)"
               >
                 {{ statusLabel(c.status) }}
@@ -140,36 +149,56 @@
 
             <!-- Date -->
             <td class="px-5 py-4 whitespace-nowrap">
-              <span class="text-sm text-slate-400">{{ c.createdAt | date:'yyyy/MM/dd' }}</span>
+              <span class="text-sm text-slate-400">{{ c.createdAt | date:'dd/MM/yyyy' }}</span>
             </td>
 
             <!-- Actions -->
             <td class="px-5 py-4">
-              <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+              <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+
+                <!-- View -->
                 <a
                   [routerLink]="['/cases', c._id]"
                   class="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-blue-500
-                         transition-colors duration-150 no-underline"
+                         transition-colors duration-150 no-underline inline-flex"
                   title="تفاصيل"
                 >
-                  👁
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
                 </a>
+
+                <!-- Edit -->
                 <a
                   [routerLink]="['/cases', c._id, 'edit']"
                   class="p-1.5 rounded-lg hover:bg-amber-50 text-slate-400 hover:text-amber-500
-                         transition-colors duration-150 no-underline"
+                         transition-colors duration-150 no-underline inline-flex"
                   title="تعديل"
                 >
-                  ✏️
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"></path>
+                  </svg>
                 </a>
+
+                <!-- Delete -->
                 <button
                   (click)="deleteCase(c._id)"
                   class="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500
-                         transition-colors duration-150 border-none bg-transparent cursor-pointer"
+                         transition-colors duration-150 border-none bg-transparent cursor-pointer inline-flex"
                   title="حذف"
                 >
-                  🗑
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
                 </button>
+
               </div>
             </td>
           </tr>
@@ -180,7 +209,11 @@
 
     <!-- ── Empty State ── -->
     <div *ngIf="!loading && cases.length === 0" class="text-center py-20 text-slate-400">
-      <div class="text-5xl mb-4">📁</div>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+           class="w-14 h-14 mx-auto mb-4 text-slate-300">
+        <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"></path>
+      </svg>
       <p class="text-base">لا توجد قضايا</p>
       <p class="text-sm mt-1">جرّب تغيير فلتر البحث أو أضف قضية جديدة</p>
     </div>

@@ -321,3 +321,34 @@
   .tl-task-actions { flex-direction: column; align-items: flex-end; gap: 6px; padding: 10px 12px; }
   .tl-status-select { display: none; }
 }
+
+.tl-input {
+  padding: 9px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  color: #0f172a;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+  &:focus { border-color: #94a3b8; }
+
+  /* لون الـ placeholder واضح بدل الافتراضي الباهت */
+  &::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+  }
+
+  /* تعطيل تلوين الـ autofill الأصفر بتاع المتصفح */
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus {
+    -webkit-text-fill-color: #0f172a;
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    box-shadow: 0 0 0px 1000px #fff inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}

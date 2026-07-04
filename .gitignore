@@ -1,5 +1,57 @@
+# .gitignore (Professional for Node.js + Firebase Project)
+
+# Node modules
+
 node_modules/
+
+# Build folders
+
 dist/
+build/
+
+# Angular / frontend
+
 .angular/
+
+# Environment variables
+
 .env
+.env.*
+
+# Logs
+
 *.log
+logs/
+
+# OS files
+
+.DS_Store
+Thumbs.db
+
+# IDE / Editors
+
+.vscode/
+.idea/
+
+# Firebase secrets (VERY IMPORTANT 🚨)
+
+src/*firebase-adminsdk*.json
+
+# Temporary files
+
+tmp/
+temp/
+
+# Coverage
+
+coverage/
+
+# Cache
+
+.cache/
+
+# Optional: lock files (حسب فريقك)
+
+# package-lock.json
+
+# yarn.lock

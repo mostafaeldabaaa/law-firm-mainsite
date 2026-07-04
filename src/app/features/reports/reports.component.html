@@ -1,0 +1,66 @@
+<div class="p-6 bg-gray-50 min-h-screen" dir="rtl">
+
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-xl font-bold text-gray-900">📊 التقارير</h1>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    <!-- Case Status -->
+    <div class="bg-white rounded-2xl shadow-sm p-5">
+      <h2 class="text-sm font-semibold text-gray-900 mb-4">توزيع القضايا حسب الحالة</h2>
+
+      <div *ngIf="loadingStatus" class="flex items-center justify-center py-10 text-gray-400 text-sm gap-2">
+        <div class="w-5 h-5 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
+        جاري التحميل...
+      </div>
+
+      <div *ngIf="!loadingStatus" class="flex flex-col gap-3">
+        <div *ngFor="let item of caseStatus" class="flex items-center gap-3">
+          <div class="w-24 flex-shrink-0 text-xs text-gray-600">{{ statusLabel(item.status) }}</div>
+          <div class="flex-1 bg-gray-100 rounded h-5 overflow-hidden">
+            <div
+              class="h-full rounded transition-all duration-500"
+              [ngClass]="statusBarColor(item.status)"
+              [style.width.%]="barWidth(item.count)"
+            ></div>
+          </div>
+          <div class="w-8 text-left text-xs font-semibold text-gray-700">{{ item.count }}</div>
+          <div class="w-28 text-left text-xs text-gray-500 whitespace-nowrap">{{ item.totalValue | number }} ج.م</div>
+        </div>
+
+        <div *ngIf="caseStatus.length === 0" class="text-center py-10 text-gray-400 text-sm">
+          لا توجد بيانات
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue -->
+    <div class="bg-white rounded-2xl shadow-sm p-5">
+      <h2 class="text-sm font-semibold text-gray-900 mb-4">الإيرادات الشهرية</h2>
+
+      <div *ngIf="loadingRevenue" class="flex items-center justify-center py-10 text-gray-400 text-sm gap-2">
+        <div class="w-5 h-5 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
+        جاري التحميل...
+      </div>
+
+      <div *ngIf="!loadingRevenue" class="flex flex-col gap-3">
+        <div *ngFor="let r of revenue" class="flex items-center gap-3">
+          <div class="w-20 flex-shrink-0 text-xs text-gray-600">{{ monthLabel(r.month) }}</div>
+          <div class="flex-1 bg-gray-100 rounded h-5 overflow-hidden">
+            <div class="h-full rounded bg-blue-400 transition-all duration-500" [style.width.%]="revenueWidth(r.total)"></div>
+          </div>
+          <div class="w-24 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">
+            {{ r.total | number }} ج.م
+          </div>
+        </div>
+
+        <div *ngIf="revenue.length === 0" class="text-center py-10 text-gray-400 text-sm">
+          لا توجد بيانات
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

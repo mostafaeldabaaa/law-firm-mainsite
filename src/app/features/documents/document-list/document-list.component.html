@@ -1,0 +1,184 @@
+<div class="p-6 max-w-7xl mx-auto" dir="rtl">
+
+  <!-- العنوان وشريط الأدوات -->
+  <div class="flex items-start justify-between gap-4 mb-8 flex-wrap">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="w-1 h-5 bg-amber-500 rounded-full"></span>
+        <span class="text-xs text-amber-600 tracking-widest font-medium">نظام المحاماة</span>
+      </div>
+      <h1 class="text-[26px] font-bold text-[#0f1d33] m-0">المستندات</h1>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
+      <select
+        [ngModel]="caseFilter()"
+        (ngModelChange)="onCaseFilterChange($event)"
+        class="text-sm text-gray-700 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-amber-400/20">
+        <option value="">كل القضايا</option>
+        @for (c of cases(); track c._id || c.id) {
+          <option [value]="c._id || c.id">{{ caseName(c) }}</option>
+        }
+      </select>
+
+      <button
+        (click)="openUpload()"
+        class="inline-flex items-center gap-2 bg-[#0f1d33] hover:bg-[#16294a] text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors">
+        <span class="text-base leading-none">+</span>
+        رفع مستند جديد
+      </button>
+    </div>
+  </div>
+
+  <!-- حالة التحميل -->
+  @if (loading()) {
+    <div class="bg-white rounded-2xl border border-gray-100 py-16 text-center text-sm text-gray-400">
+      جارٍ التحميل...
+    </div>
+  }
+
+  <!-- لا توجد مستندات -->
+  @if (!loading() && docs().length === 0) {
+    <div class="bg-white rounded-2xl border border-gray-100 py-20 text-center">
+      <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1zM9 12h6M9 16h6" />
+        </svg>
+      </div>
+      <p class="text-sm text-gray-400">لا توجد مستندات لعرضها</p>
+    </div>
+  }
+
+  <!-- جدول المستندات -->
+  @if (!loading() && docs().length > 0) {
+    <div class="overflow-x-auto bg-white rounded-2xl border border-gray-100">
+      <table class="min-w-full text-sm text-right">
+        <thead>
+          <tr class="border-b border-gray-100">
+            <th class="text-right font-medium text-gray-400 py-3 px-4 text-xs">العنوان</th>
+            <th class="text-right font-medium text-gray-400 py-3 px-4 text-xs">القضية</th>
+            <th class="text-right font-medium text-gray-400 py-3 px-4 text-xs">التصنيف</th>
+            <th class="text-right font-medium text-gray-400 py-3 px-4 text-xs">تم الرفع بواسطة</th>
+            <th class="text-right font-medium text-gray-400 py-3 px-4 text-xs">التاريخ</th>
+            <th class="text-right font-medium text-gray-400 py-3 px-4 text-xs">إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (d of docs(); track d._id) {
+            <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-3.5 font-medium text-[#0f1d33]">{{ d.title || '-' }}</td>
+              <td class="px-4 py-3.5 text-gray-500">{{ caseTitle(d) }}</td>
+              <td class="px-4 py-3.5">
+                <span class="text-xs font-medium bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full">{{ categoryLabel(d.category) }}</span>
+              </td>
+              <td class="px-4 py-3.5 text-gray-500">{{ uploaderName(d) }}</td>
+              <td class="px-4 py-3.5 text-gray-400">{{ d.createdAt | date:'dd/MM/yyyy' }}</td>
+              <td class="px-4 py-3.5">
+                <div class="flex items-center gap-3">
+                  <a [href]="fileUrl(d)" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
+                    </svg>
+                    عرض / تحميل
+                  </a>
+                  <button (click)="deleteDocument(d)" title="حذف المستند"
+                          class="text-gray-300 hover:text-red-500 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m2 0v13a1 1 0 01-1 1H8a1 1 0 01-1-1V7h10zM10 11v6M14 11v6" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- مودال الرفع -->
+  @if (showUpload()) {
+    <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" (click)="showUpload.set(false)">
+      <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6" dir="rtl" (click)="$event.stopPropagation()">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-base font-bold text-[#0f1d33] m-0">رفع مستند جديد</h2>
+          <button (click)="showUpload.set(false)" class="text-gray-400 hover:text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm text-gray-600 mb-1.5">القضية</label>
+            <select
+              [ngModel]="uploadForm().caseId"
+              (ngModelChange)="updateUploadForm('caseId', $event)"
+              class="w-full text-sm text-gray-900 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-amber-400/20">
+              <option value="">اختر القضية</option>
+              @for (c of cases(); track c._id || c.id) {
+                <option [value]="c._id || c.id">{{ caseName(c) }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1.5">عنوان المستند</label>
+            <input
+              type="text"
+              [ngModel]="uploadForm().title"
+              (ngModelChange)="updateUploadForm('title', $event)"
+              class="w-full text-sm text-gray-900 placeholder-gray-400 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-amber-400/20"
+              placeholder="مثال: عقد الشراكة" />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1.5">التصنيف (اختياري)</label>
+            <select
+              [ngModel]="uploadForm().category"
+              (ngModelChange)="updateUploadForm('category', $event)"
+              class="w-full text-sm text-gray-900 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-amber-400/20">
+              <option value="">بدون تصنيف</option>
+              @for (cat of categories; track cat) {
+                <option [value]="cat">{{ categoryLabels[cat] }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1.5">الملف</label>
+            <input
+              #fileInput
+              type="file"
+              accept=".pdf,.doc,.docx,image/png,image/jpeg"
+              (change)="onFileChange($event)"
+              class="w-full text-sm text-gray-500 file:ml-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-amber-50 file:text-amber-700 file:font-medium hover:file:bg-amber-100" />
+            @if (selectedFile()) {
+              <p class="text-xs text-gray-400 mt-1.5">{{ selectedFile()!.name }}</p>
+            }
+          </div>
+
+          @if (uploadError()) {
+            <p class="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-3.5 py-2.5">{{ uploadError() }}</p>
+          }
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+          <button
+            (click)="showUpload.set(false)"
+            class="px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
+            إلغاء
+          </button>
+          <button
+            (click)="upload()"
+            [disabled]="uploading()"
+            class="px-5 py-2.5 rounded-xl text-sm font-medium bg-[#0f1d33] hover:bg-[#16294a] text-white disabled:opacity-60 disabled:cursor-not-allowed">
+            {{ uploading() ? 'جارٍ الرفع...' : 'رفع' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

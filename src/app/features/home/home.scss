@@ -1,0 +1,199 @@
+/* home.component.scss
+   حركة الصفحة: دخول الـ Hero عند التحميل، ظهور الأقسام عند التمرير،
+   تفاعلات hover خفيفة على الأزرار والكروت، وقائمة موبايل بانزلاق ناعم.
+   كل حركة محسوبة ومريحة للعين — مفيش أي إضافة زخرفية زيادة عن اللزوم. */
+
+// ---------- Hero entrance ----------
+.hero-bg {
+  animation: heroZoom 8s ease-out both;
+}
+
+@keyframes heroZoom {
+  from { transform: scale(1.06); opacity: .0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.hero-item {
+  opacity: 0;
+  animation: fadeUp .8s cubic-bezier(.16, 1, .3, 1) both;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ---------- Scroll reveal (toggled via IntersectionObserver in the component) ----------
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .7s cubic-bezier(.16, 1, .3, 1),
+              transform .7s cubic-bezier(.16, 1, .3, 1);
+
+  &.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// staggered children inside a revealed grid/list
+.stagger-list > * {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .55s cubic-bezier(.16, 1, .3, 1),
+              transform .55s cubic-bezier(.16, 1, .3, 1);
+}
+
+.is-visible .stagger-list > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@for $i from 1 through 8 {
+  .stagger-list > *:nth-child(#{$i}) {
+    transition-delay: #{$i * 0.07}s;
+  }
+}
+
+// ---------- Nav links ----------
+.nav-link {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -4px;
+    width: 0;
+    height: 1px;
+    background: currentColor;
+    transition: width .3s ease;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+}
+
+// ---------- Buttons ----------
+.btn-lift {
+  transition: transform .25s ease, box-shadow .25s ease, background-color .25s ease, border-color .25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.btn-glow {
+  transition: transform .25s ease, box-shadow .35s ease, background-color .25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -8px rgba(251, 191, 36, .55);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.icon-shift {
+  transition: transform .25s ease;
+}
+
+a:hover > .icon-shift {
+  transform: translateX(-3px);
+}
+
+// ---------- Cards ----------
+.card-lift {
+  transition: transform .3s cubic-bezier(.16, 1, .3, 1), box-shadow .3s ease, background-color .3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px -14px rgba(15, 29, 51, .18);
+  }
+}
+
+.card-lift-dark {
+  transition: transform .3s cubic-bezier(.16, 1, .3, 1), background-color .3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+.img-zoom {
+  overflow: hidden;
+  transition: transform .6s cubic-bezier(.16, 1, .3, 1);
+}
+
+.reveal:hover .img-zoom,
+.img-zoom:hover {
+  transform: scale(1.03);
+}
+
+.social-icon {
+  transition: transform .25s ease, background-color .25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+// ---------- CTA background blobs ----------
+.blob-float {
+  animation: floaty 7s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes floaty {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(6px, -10px); }
+}
+
+// ---------- Mobile menu ----------
+.mobile-menu {
+  animation: slideDown .3s cubic-bezier(.16, 1, .3, 1) both;
+  transform-origin: top;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px) scaleY(.96); }
+  to   { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+
+.menu-icon {
+  transition: transform .25s ease;
+
+  &.is-open {
+    transform: rotate(90deg);
+  }
+}
+
+// ---------- Respect the user's motion preference ----------
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg,
+  .hero-item,
+  .reveal,
+  .stagger-list > *,
+  .blob-float,
+  .mobile-menu {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .btn-lift,
+  .btn-glow,
+  .card-lift,
+  .card-lift-dark,
+  .img-zoom,
+  .social-icon,
+  .icon-shift,
+  .menu-icon {
+    transition: none !important;
+  }
+}

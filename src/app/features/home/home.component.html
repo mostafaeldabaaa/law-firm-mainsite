@@ -1,0 +1,254 @@
+<!-- home.component.html -->
+<div dir="rtl" class="font-sans text-gray-800 bg-white">
+
+  <!-- ===== Navbar ===== -->
+  <header class="sticky top-0 z-50 bg-[#0f1d33] text-white">
+    <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
+      <button (click)="toggleMenu()" class="md:hidden p-1.5 -mr-1.5 text-white/80 hover:text-white transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 menu-icon" [class.is-open]="menuOpen" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <nav class="hidden md:flex items-center gap-7 text-sm text-white/75">
+        <a href="#home" class="nav-link hover:text-white transition-colors">الرئيسية</a>
+        <a href="#about" class="nav-link hover:text-white transition-colors">عن المؤسسة</a>
+        <a href="#services" class="nav-link hover:text-white transition-colors">خدماتنا</a>
+        <a href="#team" class="nav-link hover:text-white transition-colors">فريق العمل</a>
+        <a href="#contact" class="nav-link hover:text-white transition-colors">تواصل معنا</a>
+      </nav>
+
+      <a routerLink="/auth/login"
+         class="btn-lift hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold bg-white/10 hover:bg-white/15 border border-white/15 text-white px-4 py-2 rounded-full transition-colors">
+        تسجيل الدخول
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 icon-shift" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h11m-4 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h5a2 2 0 012 2v1" />
+        </svg>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <img src="/assets/images/logo.png" alt="محسن عبدالله للمحاماة" class="h-9 w-9 object-contain" />
+        <span class="font-semibold tracking-wide text-sm leading-tight hidden sm:block">
+          محسن عبدالله<br /><span class="text-[10px] text-white/50 font-normal">LAW FIRM</span>
+        </span>
+      </div>
+    </div>
+
+    @if (menuOpen) {
+      <nav class="mobile-menu md:hidden flex flex-col gap-1 px-5 pb-4 text-sm text-white/80 border-t border-white/10 pt-3">
+        <a href="#home" class="py-1.5">الرئيسية</a>
+        <a href="#about" class="py-1.5">عن المؤسسة</a>
+        <a href="#services" class="py-1.5">خدماتنا</a>
+        <a href="#team" class="py-1.5">فريق العمل</a>
+        <a href="#contact" class="py-1.5">تواصل معنا</a>
+        <a routerLink="/auth/login" class="py-1.5 text-amber-300 font-medium">تسجيل الدخول</a>
+      </nav>
+    }
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section id="home" class="relative">
+    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1589994965851-a8f479c573a9?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center hero-bg"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0f1d33]/90 via-[#0f1d33]/80 to-[#0f1d33]/95"></div>
+
+    <div class="relative max-w-3xl mx-auto text-center px-6 py-20 md:py-28 text-white">
+      <img src="/assets/images/logo.png" alt="محسن عبدالله للمحاماة" class="h-16 w-16 object-contain mx-auto mb-5 hero-item" style="--d:0s" />
+      <p class="text-amber-300 text-xs font-semibold tracking-[0.2em] mb-3 hero-item" style="--d:.1s">MOHSEN ABDULLAH LAW FIRM</p>
+      <h1 class="text-3xl md:text-5xl font-bold leading-tight mb-4 hero-item" style="--d:.2s">مؤسسة محسن عبدالله للمحاماة</h1>
+      <p class="text-white/70 text-sm md:text-base leading-relaxed max-w-xl mx-auto mb-8 hero-item" style="--d:.32s">
+        نرافقك خطوة بخطوة، من الاستشارة الأولى وحتى صدور الحكم، بخبرة قانونية متخصصة ومتابعة دقيقة تحفظ حقوقك.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 hero-item" style="--d:.44s">
+        <a routerLink="/consultations"
+           class="btn-glow inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-[#0f1d33] font-semibold text-sm px-6 py-3 rounded-full transition-colors">
+          احجز استشارتك الآن
+        </a>
+        <a href="#contact"
+           class="btn-lift inline-flex items-center gap-2 border border-white/25 hover:border-white/50 text-white text-sm px-6 py-3 rounded-full transition-colors">
+          تواصل معنا
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== عن المؤسسة ===== -->
+  <section id="about" class="max-w-6xl mx-auto px-5 py-16 md:py-24 reveal">
+    <div class="grid md:grid-cols-2 gap-10 items-center">
+      <div class="order-2 md:order-1">
+        <p class="text-amber-600 text-xs font-semibold tracking-[0.15em] mb-2">عن المؤسسة</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-[#0f1d33] mb-4 leading-snug">
+          خبرة قانونية تراكمت على مدار سنوات من الممارسة الفعلية
+        </h2>
+        <p class="text-gray-500 text-sm leading-relaxed mb-8">
+          يضم مكتب محسن عبدالله للمحاماة نخبة من المحامين والمستشارين المتخصصين في مختلف فروع القانون، ونحرص على
+          متابعة كل قضية بشكل شخصي من أول استشارة وحتى إغلاق الملف، مع شفافية كاملة في كل خطوة.
+        </p>
+        <div class="flex items-center gap-10">
+          <div class="stat-count">
+            <p class="text-2xl font-bold text-[#0f1d33]">+1500</p>
+            <p class="text-xs text-gray-400 mt-1">عميل تمت خدمته</p>
+          </div>
+          <div class="w-px h-10 bg-gray-200"></div>
+          <div class="stat-count">
+            <p class="text-2xl font-bold text-[#0f1d33]">+6</p>
+            <p class="text-xs text-gray-400 mt-1">محامين ومستشارين متخصصين</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-1 md:order-2">
+        <img
+          src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1200&auto=format&fit=crop"
+          alt="مكتب المحاماة"
+          class="w-full h-72 md:h-96 object-cover rounded-2xl img-zoom" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== لماذا تختارنا ===== -->
+  <section class="bg-gray-50">
+    <div class="max-w-6xl mx-auto px-5 py-16 md:py-24 reveal">
+      <div class="grid md:grid-cols-2 gap-10 items-center">
+        <img
+          src="https://images.unsplash.com/photo-1521791055366-0d553872125f?q=80&w=1000&auto=format&fit=crop"
+          alt="استشارة قانونية"
+          class="w-full h-72 md:h-96 object-cover rounded-2xl img-zoom" />
+
+        <div>
+          <p class="text-amber-600 text-xs font-semibold tracking-[0.15em] mb-2">لماذا تختارنا</p>
+          <h2 class="text-2xl md:text-3xl font-bold text-[#0f1d33] mb-6 leading-snug">
+            لماذا تختار محسن عبدالله للمحاماة؟
+          </h2>
+          <ul class="space-y-3.5 text-sm text-gray-600 stagger-list">
+            @for (item of whyUs; track item) {
+              <li class="flex items-start gap-2.5">
+                <span class="mt-1 w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                <span class="leading-relaxed">{{ item }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== خدماتنا ===== -->
+  <section id="services" class="max-w-6xl mx-auto px-5 py-16 md:py-24 reveal">
+    <div class="text-center max-w-lg mx-auto mb-12">
+      <p class="text-amber-600 text-xs font-semibold tracking-[0.15em] mb-2">خدماتنا القانونية</p>
+      <h2 class="text-2xl md:text-3xl font-bold text-[#0f1d33]">من أهم الخدمات التي نقدمها</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-x-10 gap-y-4 stagger-list">
+      @for (service of services; track service) {
+        <div class="flex items-start gap-2.5 bg-gray-50 rounded-xl p-4 card-lift">
+          <span class="mt-1 w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+          <p class="text-sm text-gray-600 leading-relaxed">{{ service }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ===== فريق العمل ===== -->
+  <section id="team" class="bg-[#0f1d33] relative overflow-hidden reveal">
+    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1589578527966-fdac0f44566c?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center opacity-10"></div>
+    <div class="relative max-w-6xl mx-auto px-5 py-16 md:py-24">
+      <div class="text-center max-w-lg mx-auto mb-12">
+        <p class="text-amber-300 text-xs font-semibold tracking-[0.15em] mb-2">فريقنا</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-white">فريق العمل</h2>
+      </div>
+
+      <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-5 stagger-list">
+        @for (member of team; track member.name) {
+          <div class="border border-white/15 rounded-2xl p-6 text-center hover:border-amber-400/50 transition-colors card-lift-dark">
+            <img src="/assets/images/logo.png" alt="" class="h-10 w-10 object-contain mx-auto mb-4 opacity-90" />
+            <p class="text-amber-300 text-xs font-medium mb-1">{{ member.title }}</p>
+            <p class="text-white font-semibold mb-1.5">{{ member.name }}</p>
+            <p class="text-white/50 text-xs leading-relaxed">{{ member.role }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section id="contact" class="max-w-5xl mx-auto px-5 py-14 reveal">
+    <div class="bg-[#0f1d33] rounded-3xl px-8 py-12 text-center relative overflow-hidden">
+      <div class="absolute -top-10 -left-10 w-40 h-40 bg-amber-400/10 rounded-full blob-float"></div>
+      <div class="absolute -bottom-14 -right-14 w-52 h-52 bg-amber-400/10 rounded-full blob-float" style="--delay:1.5s"></div>
+      <h2 class="relative text-2xl md:text-3xl font-bold text-white mb-3">هل تحتاج إلى استشارة قانونية؟</h2>
+      <p class="relative text-white/60 text-sm max-w-md mx-auto mb-7">
+        فريقنا جاهز للاستماع لتفاصيل حالتك وتقديم استشارة قانونية واضحة ومباشرة.
+      </p>
+      <a routerLink="/consultations"
+         class="btn-glow relative inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-[#0f1d33] font-semibold text-sm px-7 py-3 rounded-full transition-colors">
+        احجز استشارتك الآن
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="bg-[#0f1d33] text-white/70 pt-14 pb-6">
+    <div class="max-w-6xl mx-auto px-5">
+      <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-8 pb-10 border-b border-white/10">
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <img src="/assets/images/logo.png" alt="محسن عبدالله للمحاماة" class="h-9 w-9 object-contain" />
+            <span class="font-semibold text-white text-sm leading-tight">محسن عبدالله<br /><span class="text-[10px] text-white/40 font-normal">LAW FIRM</span></span>
+          </div>
+          <p class="text-xs leading-relaxed text-white/50">
+            نقدم استشارات ومتابعة قانونية متخصصة لعملائنا في مختلف فروع القانون.
+          </p>
+          <div class="flex items-center gap-2.5 mt-4">
+            <a href="#" class="social-icon w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0022 12z"/></svg>
+            </a>
+            <a href="#" class="social-icon w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14zM8.34 18v-8.4H5.67V18h2.67zM7 8.48c.86 0 1.4-.57 1.4-1.28-.02-.73-.54-1.28-1.38-1.28-.84 0-1.4.55-1.4 1.28 0 .71.54 1.28 1.36 1.28H7zM19 18v-4.8c0-2.6-1.4-3.8-3.24-3.8-1.5 0-2.17.82-2.55 1.4V10h-2.67v8h2.67v-4.5c0-.24.02-.48.1-.65.2-.48.66-1 1.44-1 1 0 1.4.77 1.4 1.9V18H19z"/></svg>
+            </a>
+            <a href="#" class="social-icon w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.1-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.4-1.1.6-1.3-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.4 9.4 0 015 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.6 1 2.7 0 3.9-2.4 4.8-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0022 12c0-5.5-4.5-10-10-10z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-white font-medium text-sm mb-3">روابط سريعة</p>
+          <ul class="space-y-2 text-xs">
+            <li><a href="#home" class="hover:text-white transition-colors">الرئيسية</a></li>
+            <li><a href="#about" class="hover:text-white transition-colors">عن المؤسسة</a></li>
+            <li><a href="#services" class="hover:text-white transition-colors">خدماتنا</a></li>
+            <li><a href="#team" class="hover:text-white transition-colors">فريق العمل</a></li>
+            <li><a routerLink="/auth/login" class="hover:text-white transition-colors">تسجيل الدخول</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="text-white font-medium text-sm mb-3">خدماتنا</p>
+          <ul class="space-y-2 text-xs">
+            <li>القانون المدني والتجاري</li>
+            <li>تأسيس الشركات</li>
+            <li>الأحوال الشخصية</li>
+            <li>القانون الجنائي</li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="text-white font-medium text-sm mb-3">تواصل معنا</p>
+          <ul class="space-y-2 text-xs text-white/60 leading-relaxed">
+            <li>12 ش حسن المأمون، الحي الثامن، مدينة نصر، القاهرة</li>
+            <li dir="ltr" class="text-right">info&#64;mohsenabdullah-lawfirm.com</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-5 text-[11px] text-white/40">
+        <p>Mohsen Abdullah Law Firm 2026 © All Rights Reserved</p>
+        <div class="flex items-center gap-4">
+          <a href="#" class="hover:text-white/70">Terms of Service</a>
+          <a href="#" class="hover:text-white/70">Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

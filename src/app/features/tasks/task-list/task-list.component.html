@@ -20,13 +20,13 @@
       <div class="col-span-2 flex flex-col gap-1.5">
         <label class="text-xs font-medium text-slate-500">العنوان *</label>
         <input type="text" [(ngModel)]="form.title" placeholder="عنوان المهمة..."
-          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 w-full" />
+          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 w-full text-slate-900 placeholder:text-slate-400" />
       </div>
 
       <div class="flex flex-col gap-1.5">
         <label class="text-xs font-medium text-slate-500">مسند إلى *</label>
         <select [(ngModel)]="form.assignedTo"
-          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 bg-white w-full">
+          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 bg-white w-full text-slate-900">
           <option value="">اختر</option>
           <option *ngFor="let u of users" [value]="u._id">{{ getName(u) }}</option>
         </select>
@@ -35,7 +35,7 @@
       <div class="flex flex-col gap-1.5">
         <label class="text-xs font-medium text-slate-500">الأولوية</label>
         <select [(ngModel)]="form.priority"
-          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 bg-white w-full">
+          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 bg-white w-full text-slate-900">
           <option value="low">منخفضة</option>
           <option value="medium">متوسطة</option>
           <option value="high">عالية</option>
@@ -45,13 +45,13 @@
       <div class="flex flex-col gap-1.5">
         <label class="text-xs font-medium text-slate-500">تاريخ الاستحقاق *</label>
         <input type="date" [(ngModel)]="form.dueDate"
-          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 w-full" />
+          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 w-full text-slate-900" />
       </div>
 
       <div class="col-span-2 flex flex-col gap-1.5">
         <label class="text-xs font-medium text-slate-500">الوصف</label>
         <textarea [(ngModel)]="form.description" rows="2" placeholder="تفاصيل إضافية..."
-          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 resize-none w-full font-[inherit]"></textarea>
+          class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 resize-none w-full font-[inherit] text-slate-900 placeholder:text-slate-400"></textarea>
       </div>
 
     </div>

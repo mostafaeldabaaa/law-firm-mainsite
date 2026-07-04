@@ -17,9 +17,15 @@ import { AuthService } from '../../../core/services/auth.service';
         <div class="error-msg" *ngIf="error">{{ error }}</div>
         <div class="success-msg" *ngIf="success">تم إنشاء الحساب بنجاح! <a routerLink="/auth/login">تسجيل الدخول</a></div>
 
-        <div class="form-group">
-          <label>الاسم الكامل</label>
-          <input type="text" [(ngModel)]="name" placeholder="الاسم الكامل" />
+        <div class="form-row">
+          <div class="form-group">
+            <label>الاسم الأول</label>
+            <input type="text" [(ngModel)]="firstName" placeholder="الاسم الأول" />
+          </div>
+          <div class="form-group">
+            <label>الاسم الأخير</label>
+            <input type="text" [(ngModel)]="lastName" placeholder="الاسم الأخير" />
+          </div>
         </div>
         <div class="form-group">
           <label>البريد الإلكتروني</label>
@@ -48,6 +54,8 @@ import { AuthService } from '../../../core/services/auth.service';
     h1 { font-size: 18px; font-weight: 700; color: #1a2744; margin: 0 0 24px; }
     .error-msg { background: #fff5f5; color: #c53030; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
     .success-msg { background: #f0fff4; color: #276749; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; a { color: #276749; } }
+    .form-row { display: flex; gap: 10px; }
+    .form-row .form-group { flex: 1; }
     .form-group { margin-bottom: 14px; text-align: right; label { display: block; font-size: 13px; font-weight: 500; color: #4a5568; margin-bottom: 5px; } }
     input { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box; text-align: right; &:focus { border-color: #2d4a8a; } }
     .btn-primary { width: 100%; padding: 12px; background: #1a2744; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; &:hover:not(:disabled) { background: #2d4a8a; } &:disabled { opacity: 0.7; } }
@@ -55,15 +63,24 @@ import { AuthService } from '../../../core/services/auth.service';
   `]
 })
 export class RegisterComponent {
-  name = ''; email = ''; phone = ''; password = '';
+  firstName = ''; lastName = ''; email = ''; phone = ''; password = '';
   loading = false; error = ''; success = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 
   register() {
-    if (!this.name || !this.email || !this.password) { this.error = 'يرجى تعبئة جميع الحقول المطلوبة'; return; }
+    if (!this.firstName || !this.lastName || !this.email || !this.password) {
+      this.error = 'يرجى تعبئة جميع الحقول المطلوبة';
+      return;
+    }
     this.loading = true; this.error = '';
-    this.auth.register({ name: this.name, email: this.email, phone: this.phone, password: this.password }).subscribe({
+    this.auth.register({
+      firstName: this.firstName,
+      lastName: this.lastName,
+      email: this.email,
+      phone: this.phone,
+      password: this.password
+    }).subscribe({
       next: () => { this.success = true; this.loading = false; },
       error: err => { this.error = err?.error?.message || 'خطأ في إنشاء الحساب'; this.loading = false; }
     });
