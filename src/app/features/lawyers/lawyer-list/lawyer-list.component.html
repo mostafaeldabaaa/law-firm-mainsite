@@ -1,8 +1,8 @@
-<div class="p-6 max-w-7xl mx-auto" dir="rtl">
+<div class="p-4 sm:p-6 max-w-7xl mx-auto" dir="rtl">
 
   <!-- العنوان وشريط الأدوات -->
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">المحامون</h1>
+    <h1 class="text-xl sm:text-2xl font-bold text-gray-800">المحامون</h1>
 
     <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
       <div class="relative">
@@ -20,7 +20,7 @@
 
       <button
         (click)="openAddModal()"
-        class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+        class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap w-full sm:w-auto"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -31,7 +31,7 @@
   </div>
 
   <!-- تبويبات الأدوار -->
-  <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-200 pb-4">
+  <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-200 pb-4 overflow-x-auto">
     <button
       *ngFor="let tab of roleTabs"
       (click)="setRole(tab.value)"
@@ -39,7 +39,7 @@
       [class.text-white]="activeRole === tab.value"
       [class.bg-gray-100]="activeRole !== tab.value"
       [class.text-gray-600]="activeRole !== tab.value"
-      class="px-4 py-2 rounded-full text-sm font-medium transition-colors hover:opacity-90 flex items-center gap-2"
+      class="px-4 py-2 rounded-full text-sm font-medium transition-colors hover:opacity-90 flex items-center gap-2 whitespace-nowrap shrink-0"
     >
       {{ tab.label }}
       <span
@@ -61,7 +61,7 @@
   </div>
 
   <!-- لا يوجد محامين -->
-  <div *ngIf="!loading && filtered.length === 0" class="text-center py-16 text-gray-500">
+  <div *ngIf="!loading && filtered.length === 0" class="text-center py-16 text-gray-500 px-4">
     <p class="text-lg">لا يوجد محامون لعرضهم</p>
   </div>
 
@@ -69,15 +69,15 @@
   <div *ngIf="!loading && filtered.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     <div
       *ngFor="let l of filtered"
-      class="bg-white rounded-xl shadow border border-gray-200 p-5 hover:shadow-md transition-shadow"
+      class="bg-white rounded-xl shadow border border-gray-200 p-4 sm:p-5 hover:shadow-md transition-shadow"
     >
-      <div class="flex items-start justify-between mb-3">
-        <div class="flex items-center gap-3">
+      <div class="flex items-start justify-between mb-3 gap-2">
+        <div class="flex items-center gap-3 min-w-0">
           <div class="w-11 h-11 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0">
             {{ getName(l).charAt(0) }}
           </div>
-          <div>
-            <p class="font-semibold text-gray-800">{{ getName(l) }}</p>
+          <div class="min-w-0">
+            <p class="font-semibold text-gray-800 truncate">{{ getName(l) }}</p>
             <span class="inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
               {{ roleLabel(getRole(l)) }}
             </span>
@@ -85,7 +85,7 @@
         </div>
 
         <span
-          class="text-xs font-medium px-2 py-1 rounded-full"
+          class="text-xs font-medium px-2 py-1 rounded-full shrink-0 whitespace-nowrap"
           [class.bg-emerald-50]="isActive(l)"
           [class.text-emerald-600]="isActive(l)"
           [class.bg-gray-100]="!isActive(l)"
@@ -153,12 +153,12 @@
     *ngIf="showModal"
     class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
   >
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto" dir="rtl">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-5 sm:p-6 max-h-[90vh] overflow-y-auto" dir="rtl">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold text-gray-800">
+        <h2 class="text-base sm:text-lg font-bold text-gray-800">
           {{ isEditMode ? 'تعديل بيانات المحامي' : 'إضافة محامي جديد' }}
         </h2>
-        <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600">
+        <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600 shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -201,7 +201,7 @@
           />
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">سنوات الخبرة</label>
             <input
@@ -242,17 +242,17 @@
         </p>
       </div>
 
-      <div class="flex justify-end gap-3 mt-6">
+      <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-6">
         <button
           (click)="closeModal()"
-          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 w-full sm:w-auto"
         >
           إلغاء
         </button>
         <button
           (click)="saveLawyer()"
           [disabled]="saving"
-          class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+          class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 w-full sm:w-auto"
         >
           <svg *ngIf="saving" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

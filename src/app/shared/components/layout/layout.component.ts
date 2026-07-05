@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationsService } from '../../../core/services/index';
 import { User } from '../../../core/models';
@@ -15,6 +15,7 @@ import { extractList } from '../../../core/services/api-helper'
 })
 export class LayoutComponent implements OnInit {
   sidebarCollapsed = false;
+  mobileMenuOpen = false; // جديد: للتحكم في السايدبار على الموبايل/تابلت
   userMenuOpen = false;
   unreadCount = 0;
   isRtl = true;
@@ -29,6 +30,13 @@ export class LayoutComponent implements OnInit {
   ngOnInit() {
     this.user = this.auth.currentUser();
     this.loadNotifications();
+
+    // إقفال الدرج تلقائيًا مع كل تنقل بين الصفحات (خصوصًا على الموبايل)
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.mobileMenuOpen = false;
+      }
+    });
   }
 
   get userInitial() { return this.user?.name?.charAt(0)?.toUpperCase() || '?'; }
@@ -81,6 +89,15 @@ export class LayoutComponent implements OnInit {
   onSearch(event: any) {
     const q = event.target.value.trim();
     if (q) this.router.navigate(['/search'], { queryParams: { q } });
+  }
+
+  // فتح/قفل درج السايدبار على الموبايل والتابلت
+  toggleMobileMenu() {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  closeMobileMenu() {
+    this.mobileMenuOpen = false;
   }
 
   logout() { this.auth.logout(); }

@@ -9,16 +9,16 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div dir="rtl" class="auth-page relative min-h-screen flex items-center justify-center font-sans bg-[#0f1d33] px-5 py-12 overflow-hidden">
+    <div dir="rtl" class="auth-page relative min-h-screen flex items-center justify-center font-sans bg-[#0f1d33] px-4 sm:px-5 py-8 sm:py-12 overflow-hidden">
 
       <!-- زخرفة خلفية هادية، بنفس روح صفحة الهوم -->
       <div class="absolute -top-16 -right-16 w-72 h-72 bg-amber-400/10 rounded-full blur-2xl blob-float"></div>
       <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-amber-400/10 rounded-full blur-2xl blob-float" style="--delay:1.4s"></div>
 
-      <div class="auth-card relative w-full max-w-sm bg-white rounded-3xl shadow-2xl shadow-black/30 px-8 py-10 text-center">
+      <div class="auth-card relative w-full max-w-sm bg-white rounded-3xl shadow-2xl shadow-black/30 px-6 sm:px-8 py-8 sm:py-10 text-center">
 
         <img src="/assets/images/logo.png" alt="محسن عبدالله للمحاماة"
-             class="auth-item h-14 w-14 object-contain mx-auto mb-4" style="--d:0s" />
+             class="auth-item h-12 w-12 sm:h-14 sm:w-14 object-contain mx-auto mb-4" style="--d:0s" />
 
         <p class="auth-item text-amber-600 text-[11px] font-semibold tracking-[0.18em] mb-2" style="--d:.08s">
           MOHSEN ABDULLAH LAW FIRM
@@ -60,9 +60,14 @@ import { AuthService } from '../../../core/services/auth.service';
     </div>
   `,
   styles: [`
-    .auth-item {
+    @keyframes itemIn {
       from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
+    }
+    .auth-item {
+      opacity: 0;
+      animation: itemIn .5s cubic-bezier(.16, 1, .3, 1) both;
+      animation-delay: var(--d, 0s);
     }
 
     .auth-card {
@@ -77,6 +82,11 @@ import { AuthService } from '../../../core/services/auth.service';
 
     .error-msg {
       animation: fadeUp .35s cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .btn-glow {

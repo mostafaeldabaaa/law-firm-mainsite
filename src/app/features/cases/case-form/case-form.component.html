@@ -1,23 +1,23 @@
-<div class="p-6 max-w-3xl mx-auto" dir="rtl">
+<div class="p-4 sm:p-6 max-w-3xl mx-auto" dir="rtl">
   <a routerLink="/cases" class="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 mb-4">
     <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
     </svg>
     العودة
   </a>
 
-  <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8">
+  <div class="bg-white rounded-2xl border border-gray-100 p-5 sm:p-8">
     <div class="flex items-center gap-2 mb-1">
       <span class="w-1 h-5 bg-amber-500 rounded-full"></span>
       <span class="text-xs text-amber-600 tracking-widest font-medium">نظام المحاماة</span>
     </div>
-    <h1 class="text-xl font-bold text-[#0f1d33] mb-6">{{ isEdit ? 'تعديل القضية' : 'إنشاء قضية جديدة' }}</h1>
+    <h1 class="text-lg sm:text-xl font-bold text-[#0f1d33] mb-6">{{ isEdit ? 'تعديل القضية' : 'إنشاء قضية جديدة' }}</h1>
 
     @if (error) {
       <p class="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3 mb-5">{{ error }}</p>
     }
 
-    <div class="grid sm:grid-cols-2 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
       <div class="sm:col-span-2">
         <label class="block text-sm text-gray-600 mb-1.5">عنوان القضية *</label>
         <input type="text" [(ngModel)]="form.title" placeholder="أدخل عنوان القضية"
@@ -64,13 +64,14 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-3 mt-7">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-7">
       <button (click)="submit()" [disabled]="loading"
-              class="px-6 py-2.5 rounded-xl text-sm font-medium bg-[#0f1d33] hover:bg-[#16294a] text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+              class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-medium bg-[#0f1d33] hover:bg-[#16294a] text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
         {{ loading ? 'جاري الحفظ...' : (isEdit ? 'حفظ التعديلات' : 'إنشاء القضية') }}
       </button>
-      <a routerLink="/cases" class="px-6 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 border border-gray-200 transition-colors">
+      <a routerLink="/cases" class="w-full sm:w-auto text-center px-6 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 border border-gray-200 transition-colors">
         إلغاء
       </a>
     </div>
   </div>
+</div>

@@ -59,18 +59,105 @@ import { CasesService } from '../../../core/services/cases.service';
     </div>
   `,
   styles: [`
-    .page { direction: rtl; font-family: 'Segoe UI', Tahoma, sans-serif; }
+    .page {
+      direction: rtl;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      padding: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
     .back a { color: #3182ce; text-decoration: none; font-size: 14px; display: inline-block; margin-bottom: 16px; }
-    .card { background: #fff; border-radius: 12px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      box-sizing: border-box;
+    }
     h1 { font-size: 20px; font-weight: 700; color: #1a2744; margin: 0 0 20px; }
     .error-msg { background: #fff5f5; color: #c53030; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; &.full { grid-column: 1 / -1; } label { font-size: 13px; font-weight: 500; color: #4a5568; } }
-    input, select, textarea { padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; font-family: inherit; &:focus { border-color: #2d4a8a; } }
-    .form-actions { display: flex; gap: 12px; margin-top: 20px; }
-    .btn-primary { padding: 11px 24px; background: #1a2744; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; &:disabled { opacity: 0.7; } }
-    .btn-cancel { padding: 11px 24px; border: 1px solid #e2e8f0; color: #4a5568; border-radius: 8px; text-decoration: none; font-size: 14px; }
-    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      &.full { grid-column: 1 / -1; }
+      label { font-size: 13px; font-weight: 500; color: #4a5568; }
+    }
+    input, select, textarea {
+      padding: 10px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+      width: 100%;
+      box-sizing: border-box;
+      &:focus { border-color: #2d4a8a; }
+    }
+    textarea { resize: none; }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .btn-primary {
+      padding: 11px 24px;
+      background: #1a2744;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      white-space: nowrap;
+      &:disabled { opacity: 0.7; cursor: not-allowed; }
+    }
+    .btn-cancel {
+      padding: 11px 24px;
+      border: 1px solid #e2e8f0;
+      color: #4a5568;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    /* ===== Tablet ===== */
+    @media (max-width: 900px) {
+      .page { padding: 20px; max-width: 100%; }
+    }
+
+    /* ===== Mobile ===== */
+    @media (max-width: 640px) {
+      .page { padding: 14px; }
+      .card { padding: 18px; }
+      h1 { font-size: 18px; }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .form-group.full { grid-column: 1; }
+
+      .form-actions {
+        flex-direction: column-reverse;
+        gap: 10px;
+      }
+      .btn-primary,
+      .btn-cancel {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+      }
+    }
   `]
 })
 export class SessionFormComponent implements OnInit {

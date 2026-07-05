@@ -8,7 +8,7 @@
   direction: rtl;
 }
 
-// Sidebar
+// ============ Sidebar ============
 .sidebar {
   width: 240px;
   background: #1a2744;
@@ -30,6 +30,7 @@
 
   .logo-icon { font-size: 22px; }
   .logo-text { font-size: 16px; font-weight: 700; flex: 1; }
+
   .collapse-btn {
     background: none;
     border: none;
@@ -37,6 +38,19 @@
     cursor: pointer;
     font-size: 18px;
     padding: 0;
+    &:hover { color: #fff; }
+  }
+
+  // زرار قفل خاص بالموبايل فقط
+  .mobile-close-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0;
+    margin-inline-start: auto;
     &:hover { color: #fff; }
   }
 }
@@ -75,7 +89,29 @@
   color: rgba(255,255,255,0.3);
 }
 
-// Main
+// ============ Overlay (موبايل بس) ============
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 90;
+}
+
+// ============ زرار الهمبرجر (مخفي على الديسكتوب) ============
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #1a2744;
+  cursor: pointer;
+  padding: 4px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+// ============ Main ============
 .main-wrap {
   flex: 1;
   display: flex;
@@ -87,7 +123,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
   height: 60px;
   background: #fff;
   border-bottom: 1px solid #e2e8f0;
@@ -105,79 +140,141 @@
   }
 }
 
-.topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.icon-btn {
-  position: relative;
-  font-size: 20px;
-  cursor: pointer;
-  text-decoration: none;
-
-  .badge {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: #e53e3e;
-    color: #fff;
-    border-radius: 50%;
-    font-size: 10px;
-    width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-.user-menu {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  position: relative;
-
-  .avatar {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    background: #1a2744;
-    color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 600; font-size: 14px;
-  }
-
-  .user-name { font-size: 14px; font-weight: 500; }
-
-  .dropdown {
-    position: absolute;
-    top: 44px;
-    left: 0;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-    min-width: 140px;
-    z-index: 100;
-
-    button {
-      display: block;
-      width: 100%;
-      padding: 10px 16px;
-      background: none;
-      border: none;
-      text-align: right;
-      cursor: pointer;
-      font-size: 14px;
-      &:hover { background: #f7fafc; }
-    }
-  }
-}
-
 .content {
   flex: 1;
   overflow-y: auto;
   padding: 24px;
+}
+
+// ==========================================
+// Responsive: Tablet
+// ==========================================
+@media (max-width: 1024px) {
+  .sidebar:not(.mobile-open) {
+    width: 64px;
+
+    .logo-text,
+    .collapse-btn,
+    .nav-label,
+    .nav-divider {
+      display: none;
+    }
+
+    .nav-item {
+      justify-content: center;
+      padding: 12px 0;
+    }
+
+    .nav-item.active {
+      border-right: none;
+      border-radius: 6px;
+      margin: 0 8px;
+    }
+  }
+
+  .topbar {
+    padding: 0 16px;
+
+    input[type="search"] {
+      width: 180px;
+    }
+  }
+
+  .user-menu .leading-tight {
+    display: none;
+  }
+}
+
+// ==========================================
+// Responsive: Mobile
+// ==========================================
+@media (max-width: 768px) {
+  .app-shell {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .app-shell.mobile-menu-open .sidebar-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  // السايدبار يتحول لـ drawer فوق الشاشة كلها، يفتح من اليمين (RTL)
+  .sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 240px !important;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    z-index: 100;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.2);
+
+    &.mobile-open {
+      transform: translateX(0);
+    }
+
+    // لما يفتح على الموبايل، يبان بشكله الكامل مش مطوي
+    .logo-text,
+    .nav-label,
+    .nav-divider {
+      display: block;
+    }
+
+    .collapse-btn { display: none; }
+    .mobile-close-btn { display: block; }
+
+    .nav-item {
+      justify-content: flex-start;
+      padding: 11px 16px;
+    }
+  }
+
+  .main-wrap {
+    width: 100%;
+  }
+
+  .topbar {
+    padding: 0 12px;
+    height: 56px;
+    gap: 8px;
+  }
+
+  .search-wrap {
+    display: none !important;
+  }
+
+  .user-menu .leading-tight {
+    display: none;
+  }
+
+  .breadcrumb-wrap {
+    display: none !important;
+  }
+
+  .content {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 10px;
+  }
+
+  .topbar {
+    padding: 0 10px;
+  }
 }

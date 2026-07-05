@@ -1,4 +1,4 @@
-<div class="page" dir="rtl">
+<div class="page px-4 py-5 sm:px-6 sm:py-6" dir="rtl">
   <div class="mb-5">
     <a [routerLink]="isEdit ? ['/clients', clientId] : ['/clients']"
        class="inline-flex items-center gap-1.5 text-sm font-medium text-[#8a2846] hover:text-[#1a2540] transition-colors">
@@ -6,9 +6,9 @@
     </a>
   </div>
 
-  <header class="flex flex-col gap-1 mb-7">
+  <header class="flex flex-col gap-1 mb-6 sm:mb-7">
     <span class="text-xs font-semibold uppercase tracking-wide text-[#8a2846]">{{ isEdit ? 'تعديل بيانات عميل' : 'إضافة عميل' }}</span>
-    <h1 class="text-2xl font-extrabold text-[#1a2540] font-[Tajawal,'Segoe_UI',Tahoma,sans-serif]">{{ isEdit ? 'تعديل العميل' : 'عميل جديد' }}</h1>
+    <h1 class="text-xl sm:text-2xl font-extrabold text-[#1a2540] font-[Tajawal,'Segoe_UI',Tahoma,sans-serif]">{{ isEdit ? 'تعديل العميل' : 'عميل جديد' }}</h1>
   </header>
 
   <div *ngIf="loading" class="flex items-center justify-center gap-2.5 py-[70px] text-sm text-[#8a92a8]">
@@ -16,11 +16,11 @@
     جاري التحميل...
   </div>
 
-  <form *ngIf="!loading" (ngSubmit)="submit()" class="max-w-2xl rounded-2xl border border-[#e2e6f0] bg-white p-7 shadow-sm">
+  <form *ngIf="!loading" (ngSubmit)="submit()" class="max-w-2xl rounded-2xl border border-[#e2e6f0] bg-white p-5 sm:p-7 shadow-sm">
 
     <div *ngIf="errorMsg" class="mb-5 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-600">{{ errorMsg }}</div>
 
-    <div class="grid sm:grid-cols-2 gap-5 mb-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-5">
       <div>
         <label class="block text-xs font-semibold text-[#3d4a6b] mb-1.5">الاسم الأول *</label>
         <input type="text" name="firstName" [(ngModel)]="form.firstName" required
@@ -33,7 +33,7 @@
       </div>
     </div>
 
-    <div class="grid sm:grid-cols-2 gap-5 mb-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-5">
       <div>
         <label class="block text-xs font-semibold text-[#3d4a6b] mb-1.5">البريد الإلكتروني *</label>
         <input type="email" name="email" [(ngModel)]="form.email" required dir="ltr" style="text-align: right;"
@@ -46,13 +46,13 @@
       </div>
     </div>
 
-    <div class="grid sm:grid-cols-2 gap-5 mb-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-5">
       <div>
         <label class="block text-xs font-semibold text-[#3d4a6b] mb-1.5">الرقم القومي</label>
         <input type="text" name="nationalId" [(ngModel)]="form.nationalId" dir="ltr" style="text-align: right;"
                class="w-full rounded-[10px] border border-[#e2e6f0] bg-white px-3.5 py-2.5 text-sm text-[#1a2540] outline-none transition-shadow focus:border-[#1a2540] focus:ring-2 focus:ring-[#1a2540]/10" />
       </div>
-      <div class="flex items-end">
+      <div class="flex items-center sm:items-end">
         <label class="inline-flex items-center gap-2.5 cursor-pointer select-none">
           <input type="checkbox" name="isActive" [(ngModel)]="form.isActive" class="h-4 w-4 rounded border-[#e2e6f0] accent-[#1a2540]" />
           <span class="text-sm font-medium text-[#3d4a6b]">حساب نشط</span>
@@ -67,15 +67,15 @@
       <p class="mt-1.5 text-xs text-[#8a92a8]">هتتبعت للعميل، ويقدر يغيّرها بعد أول دخول.</p>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-3">
+      <a [routerLink]="isEdit ? ['/clients', clientId] : ['/clients']"
+         class="text-center rounded-[10px] border border-[#e2e6f0] bg-white px-6 py-2.5 text-sm font-semibold text-[#1a2540] transition-colors hover:border-[#1a2540] hover:bg-[#eef1f7]">
+        إلغاء
+      </a>
       <button type="submit" [disabled]="saving"
               class="rounded-[10px] bg-[#1a2540] px-6 py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-[#8a2846] disabled:opacity-60 disabled:cursor-not-allowed">
         {{ saving ? 'جاري الحفظ...' : (isEdit ? 'حفظ التعديلات' : 'إضافة العميل') }}
       </button>
-      <a [routerLink]="isEdit ? ['/clients', clientId] : ['/clients']"
-         class="rounded-[10px] border border-[#e2e6f0] bg-white px-6 py-2.5 text-sm font-semibold text-[#1a2540] transition-colors hover:border-[#1a2540] hover:bg-[#eef1f7]">
-        إلغاء
-      </a>
     </div>
   </form>
 </div>

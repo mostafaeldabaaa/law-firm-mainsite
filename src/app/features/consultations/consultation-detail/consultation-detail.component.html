@@ -1,5 +1,5 @@
 <!-- consultation-detail.component.html -->
-<div dir="rtl" class="min-h-screen bg-gray-50 px-6 py-6">
+<div dir="rtl" class="min-h-screen bg-gray-50 px-4 py-5 sm:px-6 sm:py-6">
 
   <button
     (click)="back()"
@@ -10,7 +10,7 @@
   @if (loading()) {
     <div class="text-center text-gray-400 py-20">جارٍ التحميل...</div>
   } @else if (errorMsg()) {
-    <div class="text-center text-red-500 py-20">{{ errorMsg() }}</div>
+    <div class="text-center text-red-500 py-20 px-4">{{ errorMsg() }}</div>
   } @else if (consultation(); as c) {
     <div class="bg-white rounded-2xl border border-gray-100 max-w-3xl mx-auto">
       <app-consultation-chat

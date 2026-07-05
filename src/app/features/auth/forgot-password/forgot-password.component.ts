@@ -10,16 +10,16 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div dir="rtl" class="auth-page relative min-h-screen flex items-center justify-center bg-[#0f1d33] px-5 py-12 overflow-hidden">
+    <div dir="rtl" class="auth-page relative min-h-screen flex items-center justify-center bg-[#0f1d33] px-4 sm:px-5 py-8 sm:py-12 overflow-hidden">
 
       <!-- زخرفة خلفية هادية، بنفس روح صفحة الدخول -->
       <div class="absolute -top-16 -right-16 w-72 h-72 bg-amber-400/10 rounded-full blur-2xl blob-float"></div>
       <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-amber-400/10 rounded-full blur-2xl blob-float" style="--delay:1.4s"></div>
 
-      <div class="auth-card relative w-full max-w-sm bg-white rounded-3xl shadow-2xl shadow-black/30 px-8 py-10 text-center">
+      <div class="auth-card relative w-full max-w-sm bg-white rounded-3xl shadow-2xl shadow-black/30 px-6 sm:px-8 py-8 sm:py-10 text-center">
 
         <img src="/assets/images/logo.png" alt="محسن عبدالله للمحاماة"
-             class="auth-item h-14 w-14 object-contain mx-auto mb-4" style="--d:0s" />
+             class="auth-item h-12 w-12 sm:h-14 sm:w-14 object-contain mx-auto mb-4" style="--d:0s" />
 
         <p class="auth-item text-amber-600 text-[11px] font-semibold tracking-[0.18em] mb-2" style="--d:.08s">
           MOHSEN ABDULLAH LAW FIRM
@@ -55,12 +55,12 @@ import { AuthService } from '../../../core/services/auth.service';
         <ng-container *ngIf="step() === 2 && !success()">
           <p class="auth-item text-gray-400 text-xs mb-6" style="--d:.26s">
             أدخل الرمز المرسل إلى<br />
-            <span dir="ltr" class="font-medium text-[#0f1d33] inline-block mt-0.5">{{ email }}</span>
+            <span dir="ltr" class="font-medium text-[#0f1d33] inline-block mt-0.5 break-all">{{ email }}</span>
           </p>
           <div class="auth-item text-right mb-6" style="--d:.32s">
             <label class="block text-xs font-medium text-gray-500 mb-1.5">رمز التحقق</label>
             <input type="text" inputmode="numeric" dir="ltr" name="otp" [(ngModel)]="otp" placeholder="000000" maxlength="6"
-                   class="w-full px-3.5 py-2.5 text-center tracking-[0.5em] text-lg font-semibold border border-gray-200 rounded-xl outline-none transition-colors focus:border-amber-400 focus:ring-2 focus:ring-amber-400/15" />
+                   class="w-full px-3.5 py-2.5 text-center tracking-[0.4em] sm:tracking-[0.5em] text-base sm:text-lg font-semibold border border-gray-200 rounded-xl outline-none transition-colors focus:border-amber-400 focus:ring-2 focus:ring-amber-400/15" />
           </div>
           <button (click)="verifyOtp()" [disabled]="loading()"
                   class="auth-item btn-glow w-full bg-amber-400 hover:bg-amber-300 disabled:opacity-60 disabled:cursor-not-allowed text-[#0f1d33] font-semibold text-sm py-3 rounded-full transition-colors"

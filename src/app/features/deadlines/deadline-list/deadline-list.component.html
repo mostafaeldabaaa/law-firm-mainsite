@@ -1,24 +1,24 @@
-<div class="p-6 bg-gray-50 min-h-screen" dir="rtl">
+<div class="p-4 sm:p-6 bg-gray-50 min-h-screen" dir="rtl">
 
   <!-- Header -->
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-xl font-bold text-gray-900">⏰ المواعيد القانونية</h1>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+    <h1 class="text-lg sm:text-xl font-bold text-gray-900">⏰ المواعيد القانونية</h1>
     <button
       (click)="openAddForm()"
-      class="bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
+      class="w-full sm:w-auto bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
     >
       ➕ موعد جديد
     </button>
   </div>
 
   <!-- Add / Edit Form -->
-  <div *ngIf="showForm" class="bg-white rounded-2xl shadow-sm p-5 mb-4">
+  <div *ngIf="showForm" class="bg-white rounded-2xl shadow-sm p-4 sm:p-5 mb-4">
     <h3 class="text-sm font-semibold text-gray-900 mb-4">
       {{ isEditing ? 'تعديل موعد قانوني' : 'إضافة موعد قانوني' }}
     </h3>
 
-    <div class="grid grid-cols-2 gap-3">
-      <div class="flex flex-col gap-1.5 col-span-2">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="flex flex-col gap-1.5 sm:col-span-2">
         <label class="text-sm font-medium text-gray-600">عنوان الموعد *</label>
         <input
           type="text"
@@ -76,7 +76,7 @@
         </select>
       </div>
 
-      <div class="flex flex-col gap-1.5 col-span-2">
+      <div class="flex flex-col gap-1.5 sm:col-span-2">
         <label class="text-sm font-medium text-gray-600">الوصف / ملاحظات</label>
         <textarea
           [(ngModel)]="form.description"
@@ -91,17 +91,17 @@
       {{ formError }}
     </div>
 
-    <div class="flex gap-3 mt-5">
+    <div class="flex flex-col-reverse sm:flex-row gap-3 mt-5">
       <button
         (click)="saveDeadline()"
         [disabled]="saving"
-        class="bg-gray-900 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        class="w-full sm:w-auto bg-gray-900 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {{ saving ? 'جاري الحفظ...' : (isEditing ? 'تحديث' : 'حفظ') }}
       </button>
       <button
         (click)="closeForm()"
-        class="border border-gray-200 text-gray-600 px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+        class="w-full sm:w-auto border border-gray-200 text-gray-600 px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
       >
         إلغاء
       </button>
@@ -109,8 +109,8 @@
   </div>
 
   <!-- Details Modal -->
-  <div *ngIf="selectedDeadline" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="selectedDeadline = null">
-    <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-lg mx-4" (click)="$event.stopPropagation()">
+  <div *ngIf="selectedDeadline" class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4" (click)="selectedDeadline = null">
+    <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-lg p-5 sm:p-6 w-full sm:max-w-lg sm:mx-4 max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-base font-bold text-gray-900">تفاصيل الموعد</h3>
         <button (click)="selectedDeadline = null" class="text-gray-400 hover:text-gray-700 text-xl leading-none">✕</button>
@@ -153,7 +153,7 @@
     <select
       [(ngModel)]="statusFilter"
       (ngModelChange)="load()"
-      class="border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-gray-400 bg-white text-gray-900"
+      class="w-full sm:w-auto border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-gray-400 bg-white text-gray-900"
     >
       <option value="">كل الحالات</option>
       <option value="pending">معلقة</option>
@@ -169,8 +169,8 @@
     جاري التحميل...
   </div>
 
-  <!-- Table -->
-  <div *ngIf="!loading" class="bg-white rounded-2xl shadow-sm overflow-hidden">
+  <!-- Table: md and up -->
+  <div *ngIf="!loading" class="hidden md:block bg-white rounded-2xl shadow-sm overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full">
         <thead>
@@ -265,6 +265,86 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Cards: below md -->
+  <div *ngIf="!loading" class="md:hidden flex flex-col gap-3">
+    <div
+      *ngFor="let d of deadlines"
+      [class.bg-red-50]="isPast(d.dueDate) && d.status === 'pending'"
+      class="bg-white rounded-2xl shadow-sm p-4"
+    >
+      <div class="flex items-start justify-between gap-3 mb-2">
+        <div>
+          <p class="text-sm font-semibold text-gray-900 m-0">{{ typeLabel(d.type) }}</p>
+          <a [routerLink]="['/cases', d.case?._id]" class="text-xs text-blue-600 hover:underline">
+            {{ d.case?.caseNumber }}
+          </a>
+        </div>
+        <span
+          class="shrink-0 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold"
+          [ngClass]="{
+            'bg-amber-50 text-amber-700': d.status === 'pending',
+            'bg-blue-50 text-blue-700': d.status === 'due_soon',
+            'bg-green-50 text-green-700': d.status === 'completed',
+            'bg-red-50 text-red-700': d.status === 'missed',
+            'bg-gray-100 text-gray-600': d.status === 'cancelled'
+          }"
+        >
+          {{ statusLabel(d.status) }}
+        </span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-y-1.5 text-xs text-gray-500 mb-3">
+        <div>
+          <span class="text-gray-400">المحامي: </span>{{ lawyerName(d) }}
+        </div>
+        <div
+          [class.text-red-600]="isPast(d.dueDate)"
+          [class.font-medium]="isPast(d.dueDate)"
+        >
+          <span class="text-gray-400">الاستحقاق: </span>{{ d.dueDate | date:'dd/MM/yyyy' }}
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-gray-50">
+        <select
+          [(ngModel)]="d.status"
+          (ngModelChange)="updateStatus(d)"
+          class="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-gray-400 bg-white text-gray-900"
+        >
+          <option value="pending">معلقة</option>
+          <option value="completed">مكتملة</option>
+          <option value="cancelled">ملغاة</option>
+        </select>
+
+        <div class="flex items-center gap-3">
+          <button (click)="deleteDeadline(d)" class="text-gray-500 hover:text-red-600 transition-colors" title="حذف">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+              <line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" />
+            </svg>
+          </button>
+          <button (click)="openEditForm(d)" class="text-gray-500 hover:text-gray-900 transition-colors" title="تعديل">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+          </button>
+          <button (click)="viewDetails(d)" class="text-gray-500 hover:text-gray-900 transition-colors" title="تفاصيل">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="deadlines.length === 0" class="bg-white rounded-2xl shadow-sm text-center py-16 text-gray-400 text-sm">
+      لا توجد مواعيد
     </div>
   </div>
 </div>

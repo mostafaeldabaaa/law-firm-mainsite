@@ -1,16 +1,16 @@
-<div class="min-h-screen bg-slate-50 p-6 font-sans" dir="rtl">
+<div class="min-h-screen bg-slate-50 p-4 sm:p-6 font-sans" dir="rtl">
 
   <!-- ═══════════════════════════════════════════════════════════
        Header
   ════════════════════════════════════════════════════════════ -->
-  <div class="flex items-start justify-between mb-6">
+  <div class="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-4 mb-6">
     <div class="text-right">
-      <h1 class="text-2xl font-bold text-slate-800">القضايا</h1>
+      <h1 class="text-xl sm:text-2xl font-bold text-slate-800">القضايا</h1>
       <p class="text-sm text-slate-400 mt-0.5">إدارة قضايا المكتب ومتابعة حالتها</p>
     </div>
     <a
       routerLink="/cases/new"
-      class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-700
+      class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 bg-slate-800 hover:bg-slate-700
              text-white text-sm font-medium rounded-xl transition-colors duration-150 no-underline"
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -28,10 +28,10 @@
   <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
 
     <!-- ── Search & Filters ── -->
-    <div class="flex flex-wrap items-center gap-3 p-4 border-b border-slate-100">
+    <div class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 p-4 border-b border-slate-100">
 
       <!-- Search -->
-      <div class="relative flex-1 min-w-[220px]">
+      <div class="relative flex-1 min-w-0 sm:min-w-[220px]">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
              class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
@@ -53,7 +53,7 @@
       <select
         [(ngModel)]="statusFilter"
         (ngModelChange)="load()"
-        class="px-3 py-2 text-sm border border-slate-200 rounded-xl outline-none
+        class="w-full sm:w-auto px-3 py-2 text-sm border border-slate-200 rounded-xl outline-none
                focus:border-slate-400 bg-slate-50 text-slate-600 transition-colors duration-150"
       >
         <option value="">كل الحالات</option>
@@ -67,8 +67,8 @@
 
     </div>
 
-    <!-- ── Table ── -->
-    <div class="overflow-x-auto">
+    <!-- ── Table: md وفوق ── -->
+    <div class="hidden md:block overflow-x-auto">
       <table class="w-full min-w-[780px]">
 
         <!-- Head -->
@@ -207,8 +207,99 @@
       </table>
     </div>
 
+    <!-- ── Cards: تحت md (موبايل وتابلت بورتريه) ── -->
+    <div class="md:hidden">
+
+      <!-- Skeleton -->
+      <div *ngIf="loading" class="divide-y divide-slate-50">
+        <div *ngFor="let i of skeletonRows" class="p-4 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="h-3 w-24 bg-slate-100 rounded-full animate-pulse"></div>
+            <div class="h-6 w-20 bg-slate-100 rounded-full animate-pulse"></div>
+          </div>
+          <div class="h-3 w-40 bg-slate-100 rounded-full animate-pulse"></div>
+          <div class="h-3 w-32 bg-slate-100 rounded-full animate-pulse"></div>
+        </div>
+      </div>
+
+      <!-- Data cards -->
+      <div *ngIf="!loading && cases.length > 0" class="divide-y divide-slate-50">
+        <div *ngFor="let c of cases" class="p-4">
+
+          <!-- Row 1: case number + status -->
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <span class="text-xs font-mono font-semibold text-slate-500">{{ c.caseNumber }}</span>
+            <span
+              class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border"
+              [ngClass]="statusClasses(c.status)"
+            >
+              {{ statusLabel(c.status) }}
+            </span>
+          </div>
+
+          <!-- Title -->
+          <a
+            [routerLink]="['/cases', c._id]"
+            class="text-sm font-semibold text-slate-800 hover:text-blue-600 transition-colors
+                   duration-150 no-underline line-clamp-1 block mb-2.5"
+          >
+            {{ c.title }}
+          </a>
+
+          <!-- Meta grid -->
+          <div class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[13px] mb-3">
+            <div class="text-slate-400">العميل: <span class="text-slate-600">{{ clientName(c.client) }}</span></div>
+            <div class="text-slate-400">المحامي: <span class="text-slate-600">{{ lawyerName(c.leadLawyer) }}</span></div>
+            <div class="text-slate-400">النوع: <span class="text-slate-600">{{ c.caseType || '-' }}</span></div>
+            <div class="text-slate-400">التاريخ: <span class="text-slate-600">{{ c.createdAt | date:'dd/MM/yyyy' }}</span></div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2 pt-2 border-t border-slate-50">
+            <a
+              [routerLink]="['/cases', c._id]"
+              class="flex-1 inline-flex items-center justify-center gap-1.5 py-2 rounded-lg
+                     text-blue-500 bg-blue-50 text-xs font-medium no-underline"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              تفاصيل
+            </a>
+            <a
+              [routerLink]="['/cases', c._id, 'edit']"
+              class="flex-1 inline-flex items-center justify-center gap-1.5 py-2 rounded-lg
+                     text-amber-500 bg-amber-50 text-xs font-medium no-underline"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5">
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"></path>
+              </svg>
+              تعديل
+            </a>
+            <button
+              (click)="deleteCase(c._id)"
+              class="flex-1 inline-flex items-center justify-center gap-1.5 py-2 rounded-lg
+                     text-red-500 bg-red-50 text-xs font-medium border-none cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+              حذف
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── Empty State ── -->
-    <div *ngIf="!loading && cases.length === 0" class="text-center py-20 text-slate-400">
+    <div *ngIf="!loading && cases.length === 0" class="text-center py-16 sm:py-20 text-slate-400 px-4">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
            class="w-14 h-14 mx-auto mb-4 text-slate-300">
@@ -221,12 +312,12 @@
     <!-- ── Pagination ── -->
     <div
       *ngIf="!loading && total > pageSize"
-      class="flex items-center justify-between px-5 py-3 border-t border-slate-100"
+      class="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 border-t border-slate-100"
     >
-      <span class="text-sm text-slate-400">
+      <span class="text-sm text-slate-400 order-2 sm:order-1">
         إجمالي {{ total }} قضية
       </span>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 order-1 sm:order-2">
         <button
           (click)="prevPage()"
           [disabled]="page === 1"

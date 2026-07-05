@@ -1,16 +1,16 @@
 <!-- new-consultation-modal.component.html -->
 <div
   dir="rtl"
-  class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4"
+  class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-0 sm:px-4"
   (click)="close.emit()">
 
   <div
     (click)="$event.stopPropagation()"
-    class="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl">
+    class="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md p-5 sm:p-6 shadow-xl max-h-[90vh] overflow-y-auto">
 
     <div class="flex items-center justify-between mb-5">
       <button class="text-gray-400 hover:text-gray-600" (click)="close.emit()">✕</button>
-      <h2 class="text-lg font-bold text-gray-900">استشارة جديدة</h2>
+      <h2 class="text-base sm:text-lg font-bold text-gray-900">استشارة جديدة</h2>
     </div>
 
     <div class="space-y-4 text-right">
@@ -59,16 +59,16 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-2 mt-6">
-      <button
-        (click)="submit()"
-        class="flex-1 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2.5 rounded-lg">
-        إنشاء الاستشارة
-      </button>
+    <div class="flex flex-col-reverse sm:flex-row items-center gap-2 mt-6">
       <button
         (click)="close.emit()"
-        class="px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg border border-gray-200 hover:bg-gray-50">
+        class="w-full sm:w-auto px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg border border-gray-200 hover:bg-gray-50">
         إلغاء
+      </button>
+      <button
+        (click)="submit()"
+        class="w-full sm:flex-1 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2.5 rounded-lg">
+        إنشاء الاستشارة
       </button>
     </div>
   </div>

@@ -40,17 +40,122 @@ import { SearchService } from '../../core/services/index';
     </div>
   `,
   styles: [`
-    .page { direction: rtl; font-family: 'Segoe UI', Tahoma, sans-serif; }
+    .page {
+      direction: rtl;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      padding: 24px;
+      max-width: 800px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
     h1 { font-size: 20px; font-weight: 700; color: #1a2744; margin: 0 0 20px; }
-    .search-bar { display: flex; gap: 10px; margin-bottom: 20px; input { flex: 1; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 15px; outline: none; &:focus { border-color: #2d4a8a; } } }
-    .btn-primary { padding: 12px 24px; background: #1a2744; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; &:disabled { opacity: 0.7; } }
-    .loading { text-align: center; padding: 60px; color: #718096; }
+
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+
+      input {
+        flex: 1;
+        min-width: 0;
+        padding: 12px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+        box-sizing: border-box;
+        &:focus { border-color: #2d4a8a; }
+      }
+    }
+
+    .btn-primary {
+      padding: 12px 24px;
+      background: #1a2744;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      &:disabled { opacity: 0.7; cursor: not-allowed; }
+    }
+
+    .loading { text-align: center; padding: 60px 20px; color: #718096; }
     .results-count { font-size: 14px; color: #718096; margin-bottom: 16px; }
     .results { display: flex; flex-direction: column; gap: 10px; }
-    .result-item { display: flex; gap: 14px; background: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    .result-type { font-size: 13px; font-weight: 500; padding: 4px 10px; border-radius: 8px; background: #edf2f7; color: #4a5568; flex-shrink: 0; height: fit-content; }
-    .result-body { flex: 1; .result-title { font-size: 15px; font-weight: 500; color: #2b6cb0; text-decoration: none; &:hover { text-decoration: underline; } } .result-meta { font-size: 13px; color: #718096; margin-top: 4px; } }
-    .empty { text-align: center; padding: 40px; color: #a0aec0; }
+
+    .result-item {
+      display: flex;
+      gap: 14px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      box-sizing: border-box;
+    }
+
+    .result-type {
+      font-size: 13px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: #edf2f7;
+      color: #4a5568;
+      flex-shrink: 0;
+      height: fit-content;
+      white-space: nowrap;
+    }
+
+    .result-body {
+      flex: 1;
+      min-width: 0;
+
+      .result-title {
+        font-size: 15px;
+        font-weight: 500;
+        color: #2b6cb0;
+        text-decoration: none;
+        word-break: break-word;
+        &:hover { text-decoration: underline; }
+      }
+      .result-meta {
+        font-size: 13px;
+        color: #718096;
+        margin-top: 4px;
+        word-break: break-word;
+      }
+    }
+
+    .empty { text-align: center; padding: 40px 20px; color: #a0aec0; }
+
+    /* ===== Tablet ===== */
+    @media (max-width: 900px) {
+      .page { padding: 20px; max-width: 100%; }
+    }
+
+    /* ===== Mobile ===== */
+    @media (max-width: 640px) {
+      .page { padding: 14px; }
+      h1 { font-size: 18px; margin-bottom: 16px; }
+
+      .search-bar {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .btn-primary {
+        width: 100%;
+      }
+
+      .result-item {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 14px;
+      }
+      .result-type {
+        align-self: flex-start;
+      }
+    }
   `]
 })
 export class SearchComponent implements OnInit {
