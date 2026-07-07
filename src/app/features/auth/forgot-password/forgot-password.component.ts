@@ -123,10 +123,8 @@ import { AuthService } from '../../../core/services/auth.service';
     </div>
   `,
   styles: [`
-    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800&display=swap');
-
     :host {
-      font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+      font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
     }
 
     .auth-item {
